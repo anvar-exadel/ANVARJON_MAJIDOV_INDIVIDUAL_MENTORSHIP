@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseAccess
 {
-    class DbAccess<T> : IDbAccess<T> where T : class
+    public class DbAccess<T> : IDbAccess<T> where T : class
     {
         public async Task<T> GetWeatherData(string uri)
         {
