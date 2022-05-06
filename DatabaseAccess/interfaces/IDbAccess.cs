@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseAccess.interfaces
 {
-    interface IDbAccess<T>
+    public interface IDbAccess<T>
     {
         Task<T> GetWeatherData(string city);
     }

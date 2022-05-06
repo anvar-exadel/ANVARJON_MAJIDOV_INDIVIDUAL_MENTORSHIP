@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BusinessLogic.helpers
+{
+    public static class WeatherHelper
+    {
+        public static string GetWeatherComment(double temp)
+        {
+            string comment;
+            if (temp < 0) comment = "Dress warmer";
+            else if (temp < 20) comment = "It's fresh";
+            else if (temp < 30) comment = "Good weather";
+            else comment = "It's time to go to the beach";
+
+            return comment;
+        }
+    }
+}
