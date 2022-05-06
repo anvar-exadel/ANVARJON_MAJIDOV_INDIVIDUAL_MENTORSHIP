@@ -1,11 +1,6 @@
-﻿using BusinessLogic.models;
-using BusinessLogic.services;
+﻿using BusinessLogic.services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using WeatherApp.Strategies;
 
 namespace WeatherApp
 {
@@ -14,18 +9,16 @@ namespace WeatherApp
         static async Task Main(string[] args)
         {
             WeatherService service = new WeatherService();
-            ProgramContext program;
 
             Console.Write("Input name of city, or \"exit\" to end program\n>");
             string option = Console.ReadLine();
             while(option.ToLower() != "exit")
             {
-                Weather weather = await service.GetWeatherInfo(option);
-                if (weather == null) program = new ProgramContext(new ShowError());
-                else program = new ProgramContext(new ShowTemperature(weather));
+                var response = await service.GetWeatherInfo(option);
 
-                program.ExecuteStrategy();
-
+                if (!response.Success) Console.WriteLine(response.Comment);
+                else Console.WriteLine($"In {response.Data.Name} {response.Data.Main.Temp}°C. {response.Comment}");
+                
                 Console.Write("\nInput>");
                 option = Console.ReadLine();
             }

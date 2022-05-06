@@ -5,6 +5,6 @@ namespace BusinessLogic.interfaces
 {
     public interface IWeatherService
     {
-        Task<Weather> GetWeatherInfo(string city);
+        Task<ServiceResponse<Weather>> GetWeatherInfo(string city);
     }
 }

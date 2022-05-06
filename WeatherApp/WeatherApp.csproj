@@ -45,10 +45,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="strategies\ProgramContext.cs" />
-    <Compile Include="strategies\ShowError.cs" />
-    <Compile Include="strategies\ShowTemperature.cs" />
-    <Compile Include="strategies\Strategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
