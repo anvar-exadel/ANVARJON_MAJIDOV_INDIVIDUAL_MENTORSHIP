@@ -2,6 +2,7 @@ using BusinessLogic.helpers;
 using BusinessLogic.interfaces;
 using BusinessLogic.models;
 using DatabaseAccess;
+using DatabaseAccess.interfaces;
 using System.Threading.Tasks;
 
 namespace BusinessLogic.services
@@ -16,7 +17,7 @@ namespace BusinessLogic.services
             
             if(city.Trim().Length == 0) return new ServiceResponse<Weather>(null, false, "City name is empty");
 
-            DbAccess<Weather> _db = new DbAccess<Weather>();
+            IDbAccess<Weather> _db = new DbAccess<Weather>();
             Weather weather = await _db.GetWeatherData(uri);
 
             //check if such city exists in db

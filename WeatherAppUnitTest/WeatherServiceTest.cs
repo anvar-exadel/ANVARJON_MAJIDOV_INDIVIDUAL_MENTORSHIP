@@ -1,3 +1,4 @@
+using BusinessLogic.helpers;
 using BusinessLogic.models;
 using BusinessLogic.services;
 using DatabaseAccess;
@@ -9,30 +10,57 @@ namespace WeatherAppUnitTest
 {
     public class WeatherServiceTest
     {
-        [Fact]
-        public async Task GetWeatherInfo_UnexistingCity_ReturnsNull()
+        [Theory]
+        [InlineData("Parisuuu")]
+        [InlineData("jjjjjkkkkkk")]
+        public async Task GetWeatherInfo_UnexistingCity_ReturnsNull(string city)
         {
             //arrange
             WeatherService weatherService = new WeatherService();
 
             //act
-            var result = await weatherService.GetWeatherInfo("Parisu");
+            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
 
             //assert
-            Assert.Null(result);
+            Assert.Null(result.Data);
+            Assert.False(result.Success);
+            Assert.Equal("City not found", result.Comment);
         }
 
-        [Fact]
-        public async Task GetWeatherInfo_ExistingCity_ReturnsNotNull()
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData("      ")]
+        public async Task GetWeatherInfo_EmptyString_ReturnsNull(string city)
         {
             //arrange
             WeatherService weatherService = new WeatherService();
 
             //act
-            var result = await weatherService.GetWeatherInfo("Paris");
+            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
 
             //assert
-            Assert.NotNull(result);
+            Assert.Null(result.Data);
+            Assert.False(result.Success);
+            Assert.Equal("City name is empty", result.Comment);
+        }
+
+        [Theory]
+        [InlineData("London")]
+        [InlineData("Paris")]
+        [InlineData("washington")]
+        public async Task GetWeatherInfo_ExistingCity_ReturnsWeatherData(string city)
+        {
+            //arrange
+            WeatherService weatherService = new WeatherService();
+
+            //act
+            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
+
+            //assert
+            Assert.NotNull(result.Data);
+            Assert.True(result.Success);
+            Assert.Equal(WeatherHelper.GetWeatherComment(result.Data.Main.Temp), result.Comment);
         }
     }
 }
