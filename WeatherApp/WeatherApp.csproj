@@ -7,7 +7,7 @@
     <ProjectGuid>{5DD1E3F5-8883-49C7-BE87-6BE792A1E424}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>WeatherApp</RootNamespace>
-    <AssemblyName>WeatherApp</AssemblyName>
+    <AssemblyName>``</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -32,8 +32,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -43,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="commands\CloseCommand.cs" />
+    <Compile Include="commands\CommandInvoker.cs" />
+    <Compile Include="commands\CurrentWeatherCommand.cs" />
+    <Compile Include="commands\ForecastWeatherCommand.cs" />
+    <Compile Include="commands\ICommand.cs" />
+    <Compile Include="helper\MenuHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

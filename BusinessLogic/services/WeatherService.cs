@@ -26,5 +26,23 @@ namespace BusinessLogic.services
             string comment = WeatherHelper.GetWeatherComment(weather.Main.Temp);
             return new ServiceResponse<Weather>(weather, true, comment);
         }
+
+        public async Task<ServiceResponse<WeatherForecast>> GetWeatherForecast(string city, int days, int maxDays)
+        {
+            ServiceResponse<Weather> response = await GetWeatherInfo(city);
+            if (response.Data == null) return new ServiceResponse<WeatherForecast>(null, false, "City not found");
+            if (city.Trim().Length == 0) return new ServiceResponse<WeatherForecast>(null, false, "City name is empty");
+            if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
+
+            string uri = $@"https://api.openweathermap.org/data/2.5/onecall?lat={response.Data.Coord.Lat}&lon={response.Data.Coord.Lon}&exclude=current,alerts,hourly,minutely&appid={key}&units=metric";
+            
+            IDbAccess<WeatherForecast> _db = new DbAccess<WeatherForecast>();
+            WeatherForecast weather = await _db.GetWeatherData(uri);
+            weather.Cnt = days;
+            weather.City = response.Data.Name;
+
+            string comment = WeatherHelper.GetWeatherForecastOutput(weather);
+            return new ServiceResponse<WeatherForecast>(weather, true, comment);
+        }
     }
 }

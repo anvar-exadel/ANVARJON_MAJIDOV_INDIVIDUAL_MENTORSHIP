@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabaseAccess.interfaces
+namespace WeatherApp.commands
 {
-    public interface IDbAccess<T>
+    interface ICommand
     {
-        Task<T> GetWeatherData(string uri);
+        Task Execute();
     }
 }
