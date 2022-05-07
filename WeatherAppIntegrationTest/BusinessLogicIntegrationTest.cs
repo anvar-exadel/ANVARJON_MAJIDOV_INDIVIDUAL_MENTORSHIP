@@ -20,8 +20,8 @@ namespace WeatherAppIntegrationTest
             WeatherService _service = new WeatherService();
             
             //act
-            Weather response = await _service.GetWeatherInfo(city);
-            double temperature = response.Main.Temp;
+            ServiceResponse<Weather> response = await _service.GetWeatherInfo(city);
+            double temperature = response.Data.Main.Temp;
 
             //assert
             //regex matches all double and numeric values
