@@ -29,6 +29,7 @@ namespace WeatherApp
                     case 0: invoker.Command = new CloseCommand(); break;
                     case 1: invoker.Command = new CurrentWeatherCommand(service); break;
                     case 2: invoker.Command = new ForecastWeatherCommand(service); break;
+                    case 3: invoker.Command = new FindMaxWeatherCommand(service); break;
                     default: break;
                 }
                 await invoker.ExecuteCommand();

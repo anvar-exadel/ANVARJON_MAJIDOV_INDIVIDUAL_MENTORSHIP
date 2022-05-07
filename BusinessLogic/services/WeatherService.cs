@@ -3,6 +3,9 @@ using BusinessLogic.interfaces;
 using BusinessLogic.models;
 using DatabaseAccess;
 using DatabaseAccess.interfaces;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace BusinessLogic.services
@@ -43,6 +46,55 @@ namespace BusinessLogic.services
 
             string comment = WeatherHelper.GetWeatherForecastOutput(weather);
             return new ServiceResponse<WeatherForecast>(weather, true, comment);
+        }
+
+        public async Task<ServiceResponse<Weather>> GetMaxWeather(List<string> cities, bool debug)
+        {
+            List<Weather> weathers = new List<Weather>();
+            int failed = 0, success = 0;
+
+            List<Task> tasks = new List<Task>();
+            if (debug) Console.WriteLine("\nDebugging is enabled");
+            foreach (var city in cities) tasks.Add(AddWeathers(city));
+            await Task.WhenAll(tasks);
+            if (debug) Console.WriteLine("Debugging finished\n");
+
+            if (weathers.Count == 0) return new ServiceResponse<Weather>(null, false, $"Error, no successful requests. Failed requests count: {failed}.\n");
+
+            //find city with maximum temperature
+            Weather maxWeather = weathers[0];
+            foreach (var w in weathers) if (w.Main.Temp > maxWeather.Main.Temp) maxWeather = w;
+
+            return new ServiceResponse<Weather>(maxWeather, true, 
+                $"City with the highest temperature {maxWeather.Main.Temp}C: {maxWeather.Name}. Successful request count: {success}, failed: {failed}.\n");
+
+            //local method for getMaxWeather()
+            async Task AddWeathers(string city)
+            {
+                Stopwatch stopwatch1 = Stopwatch.StartNew();
+
+                ServiceResponse<Weather> response = await GetWeatherInfo(city);
+                if (response.Data == null && !response.Success) failed++;
+                else
+                {
+                    weathers.Add(response.Data);
+                    success++;
+                }
+                stopwatch1.Stop();
+                long milliseconds = stopwatch1.ElapsedMilliseconds;
+
+                if (debug)
+                {
+                    if (response.Data != null && response.Success)
+                    {
+                        Console.WriteLine($"City: {city}.Temperature: {response.Data.Main.Temp}. Timer: {milliseconds} ms.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"City: {city}. Error: City was not found. Timer: {milliseconds} ms.");
+                    }
+                }
+            }
         }
     }
 }

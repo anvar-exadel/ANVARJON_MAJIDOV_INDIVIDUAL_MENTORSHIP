@@ -12,6 +12,7 @@ namespace WeatherApp.helper
         {
             Console.WriteLine("1.Current weather");
             Console.WriteLine("2.Weather forecast");
+            Console.WriteLine("3.Find max temperature");
             Console.WriteLine("0.Close application");
         }
     }

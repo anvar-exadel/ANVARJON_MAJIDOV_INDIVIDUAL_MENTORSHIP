@@ -1,4 +1,5 @@
 using BusinessLogic.models;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace BusinessLogic.interfaces
@@ -7,5 +8,6 @@ namespace BusinessLogic.interfaces
     {
         Task<ServiceResponse<Weather>> GetWeatherInfo(string city);
         Task<ServiceResponse<WeatherForecast>> GetWeatherForecast(string city, int days, int maxDays);
+        Task<ServiceResponse<Weather>> GetMaxWeather(List<string> cities, bool debug);
     }
 }

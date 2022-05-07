@@ -49,6 +49,7 @@
     <Compile Include="commands\CloseCommand.cs" />
     <Compile Include="commands\CommandInvoker.cs" />
     <Compile Include="commands\CurrentWeatherCommand.cs" />
+    <Compile Include="commands\FindMaxWeatherCommand.cs" />
     <Compile Include="commands\ForecastWeatherCommand.cs" />
     <Compile Include="commands\ICommand.cs" />
     <Compile Include="helper\MenuHelper.cs" />
