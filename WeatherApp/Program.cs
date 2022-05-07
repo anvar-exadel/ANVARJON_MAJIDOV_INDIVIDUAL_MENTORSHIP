@@ -1,29 +1,40 @@
 ﻿using BusinessLogic.interfaces;
+using BusinessLogic.models;
 using BusinessLogic.services;
 using System;
+using System.Configuration;
 using System.Threading.Tasks;
+using WeatherApp.commands;
+using WeatherApp.helper;
 
 namespace WeatherApp
 {
-    internal class Program
+    class Program
     {
         static async Task Main(string[] args)
         {
             IWeatherService service = new WeatherService();
-
-            Console.Write("Input name of city, or \"exit\" to end program\n>");
-            string option = Console.ReadLine();
             
-            while(option.ToLower() != "exit")
+            CommandInvoker invoker = new CommandInvoker();
+
+            int option;
+            do
             {
-                var response = await service.GetWeatherInfo(option);
+                MenuHelper.PrintMenu();
+                Console.Write(">");
+                option = int.Parse(Console.ReadLine());
 
-                if (response.Success) Console.WriteLine($"In {response.Data.Name} {response.Data.Main.Temp}°C. {response.Comment}");
-                else Console.WriteLine(response.Comment);
-
-                Console.Write("\nInput>");
-                option = Console.ReadLine();
+                switch (option)
+                {
+                    case 0: invoker.Command = new CloseCommand(); break;
+                    case 1: invoker.Command = new CurrentWeatherCommand(service); break;
+                    case 2: invoker.Command = new ForecastWeatherCommand(service); break;
+                    case 3: invoker.Command = new FindMaxWeatherCommand(service); break;
+                    default: break;
+                }
+                await invoker.ExecuteCommand();
             }
+            while (option != 0);
         }
     }
 }
