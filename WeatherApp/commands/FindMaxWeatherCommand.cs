@@ -1,6 +1,5 @@
 ﻿using BusinessLogic.interfaces;
 using BusinessLogic.models;
-using DatabaseAccess.models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,7 +13,7 @@ namespace WeatherApp.commands
     {
         private readonly IWeatherService service;
         static bool debug = bool.Parse(ConfigurationManager.AppSettings["debug"]);
-        static double timeout = double.Parse(ConfigurationManager.AppSettings["timeout"]);
+        static int timeout = int.Parse(ConfigurationManager.AppSettings["timeout"]);
         public FindMaxWeatherCommand(IWeatherService service)
         {
             this.service = service;
@@ -26,7 +25,7 @@ namespace WeatherApp.commands
             else Console.WriteLine($"{response.Comment} Timer: {response.Milliseconds} ms.");
         }
 
-        public Task Execute()
+        public void Execute()
         {
             Console.Write("Input cities using comma. Example: Paris, London\n>");
             string input = Console.ReadLine();
@@ -35,11 +34,9 @@ namespace WeatherApp.commands
             List<Weather> weatherList = new List<Weather>();
             int success = 0, fail = 0, canceled = 0;
 
-            Parallel.ForEach(cities, async c =>
+            Parallel.ForEach(cities, c =>
             {
-                var task = service.GetWeatherInfo(c, timeout);
-                task.Wait();
-                ServiceResponse<Weather> response = await task;
+                ServiceResponse<Weather> response = service.GetWeatherInfo(c, timeout);
 
                 if (debug) PrintAdditionalInfo(response, c);
 
@@ -55,14 +52,13 @@ namespace WeatherApp.commands
             if (weatherList.Count <= 0)
             {
                 Console.WriteLine($"Error, no successful requests. Failed requests count: {fail}.Canceled: {canceled}\n");
-                return Task.CompletedTask;
+                return;
             }
 
             Weather maxWeather = weatherList[0];
             foreach (var w in weatherList) if (w.Main.Temp > maxWeather.Main.Temp) maxWeather = w;
 
             Console.WriteLine($"City with the highest temperature {maxWeather.Main.Temp}C: {maxWeather.Name}. Successful request count: {success}, failed: {fail}, canceled {canceled}.\n");
-            return Task.CompletedTask;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace WeatherApp.commands
 {
     class CurrentWeatherCommand : ICommand
     {
-        static double timeout = double.Parse(ConfigurationManager.AppSettings["timeout"]);
+        static int timeout = int.Parse(ConfigurationManager.AppSettings["timeout"]);
         private readonly IWeatherService service;
 
         public CurrentWeatherCommand(IWeatherService service)
@@ -18,12 +18,12 @@ namespace WeatherApp.commands
             this.service = service;
         }
 
-        public async Task Execute()
+        public void Execute()
         {
             Console.Write("Input city: ");
             string city = Console.ReadLine();
             
-            var response = await service.GetWeatherInfo(city, timeout);
+            var response = service.GetWeatherInfo(city, timeout);
 
             if (response.Success) Console.WriteLine($"In {response.Data.Name} {response.Data.Main.Temp}°C. {response.Comment}");
             else Console.WriteLine(response.Comment);

@@ -8,10 +8,9 @@ namespace WeatherApp.commands
 {
     public class CloseCommand : ICommand
     {
-        public Task Execute()
+        public void Execute()
         {
             Console.WriteLine("Program terminates.");
-            return Task.CompletedTask;
         }
     }
 }
