@@ -1,5 +1,6 @@
 ﻿using BusinessLogic.interfaces;
 using BusinessLogic.models;
+using DatabaseAccess.models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,6 +14,7 @@ namespace WeatherApp.commands
     {
         private readonly IWeatherService service;
         static bool debug = bool.Parse(ConfigurationManager.AppSettings["debug"]);
+        static double timeout = double.Parse(ConfigurationManager.AppSettings["timeout"]);
         public FindMaxWeatherCommand(IWeatherService service)
         {
             this.service = service;
@@ -21,7 +23,7 @@ namespace WeatherApp.commands
         private void PrintAdditionalInfo(ServiceResponse<Weather> response, string city)
         {
             if (response.Success) Console.WriteLine($"City: {response.Data.Name}.Temperature: {response.Data.Main.Temp}. Timer: {response.Milliseconds} ms.");
-            else Console.WriteLine($"City: {city}. Error: City was not found. Timer: {response.Milliseconds} ms.");
+            else Console.WriteLine($"{response.Comment} Timer: {response.Milliseconds} ms.");
         }
 
         public Task Execute()
@@ -31,11 +33,11 @@ namespace WeatherApp.commands
             List<string> cities = input.Split(',').Select(i => i.Trim()).ToList();
 
             List<Weather> weatherList = new List<Weather>();
-            int success = 0, fail = 0;
+            int success = 0, fail = 0, canceled = 0;
 
             Parallel.ForEach(cities, async c =>
             {
-                var task = service.GetWeatherInfo(c);
+                var task = service.GetWeatherInfo(c, timeout);
                 task.Wait();
                 ServiceResponse<Weather> response = await task;
 
@@ -46,19 +48,20 @@ namespace WeatherApp.commands
                     weatherList.Add(response.Data);
                     success++;
                 }
-                else fail++;
+                else if(response.ResponseType == ResponseType.Failed) fail++;
+                else if(response.ResponseType == ResponseType.Canceled) canceled++;
             });
 
             if (weatherList.Count <= 0)
             {
-                Console.WriteLine($"Error, no successful requests. Failed requests count: {fail}.\n");
+                Console.WriteLine($"Error, no successful requests. Failed requests count: {fail}.Canceled: {canceled}\n");
                 return Task.CompletedTask;
             }
 
             Weather maxWeather = weatherList[0];
             foreach (var w in weatherList) if (w.Main.Temp > maxWeather.Main.Temp) maxWeather = w;
 
-            Console.WriteLine($"City with the highest temperature {maxWeather.Main.Temp}C: {maxWeather.Name}. Successful request count: {success}, failed: {fail}.\n");
+            Console.WriteLine($"City with the highest temperature {maxWeather.Main.Temp}C: {maxWeather.Name}. Successful request count: {success}, failed: {fail}, canceled {canceled}.\n");
             return Task.CompletedTask;
         }
     }
