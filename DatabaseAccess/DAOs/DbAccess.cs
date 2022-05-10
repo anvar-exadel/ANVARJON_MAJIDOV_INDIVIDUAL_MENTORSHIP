@@ -12,38 +12,17 @@ namespace DatabaseAccess
     public class DbAccess<T> : IDbAccess<T> where T : class
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        public async Task<DbResponse<T>> GetWeatherData(string uri, double cancellationTime)
+        public DbResponse<T> GetWeatherData(string uri)
         {
-            _httpClient.Timeout = TimeSpan.FromMilliseconds(cancellationTime);
-
-            try
-            {
-                HttpResponseMessage response = await _httpClient.GetAsync(uri);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    string content = await response.Content.ReadAsStringAsync();
-                    T data = JsonConvert.DeserializeObject<T>(content);
-                    return new DbResponse<T>(data);
-                }
-                return new DbResponse<T>(null, false, "Bad request", ResponseType.Failed);
-            }
-            catch (TaskCanceledException)
-            {
-                return new DbResponse<T>(null, false, "Response time out", ResponseType.Canceled);
-            }
-        }
-        public async Task<DbResponse<T>> GetWeatherData(string uri)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            HttpResponseMessage response = _httpClient.GetAsync(uri).Result;
 
             if (response.IsSuccessStatusCode)
             {
-                string content = await response.Content.ReadAsStringAsync();
+                string content = response.Content.ReadAsStringAsync().Result;
                 T data = JsonConvert.DeserializeObject<T>(content);
                 return new DbResponse<T>(data);
             }
-            return new DbResponse<T>(null, false, "Bad request", ResponseType.Failed);
+            return new DbResponse<T>(null, false, "Bad request");
         }
     }
 }

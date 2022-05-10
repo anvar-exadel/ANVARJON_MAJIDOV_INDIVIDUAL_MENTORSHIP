@@ -8,7 +8,6 @@ namespace DatabaseAccess.interfaces
 {
     public interface IDbAccess<T>
     {
-        Task<DbResponse<T>> GetWeatherData(string uri, double cancellationTime);
-        Task<DbResponse<T>> GetWeatherData(string uri);
+        DbResponse<T> GetWeatherData(string uri);
     }
 }
