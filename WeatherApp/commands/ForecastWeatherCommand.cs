@@ -11,6 +11,7 @@ namespace WeatherApp.commands
 {
     class ForecastWeatherCommand : ICommand
     {
+        static double timeout = double.Parse(ConfigurationManager.AppSettings["timeout"]);
         static int maxDays = int.Parse(ConfigurationManager.AppSettings["maxDay"]);
         
         private readonly IWeatherService service;
@@ -26,9 +27,9 @@ namespace WeatherApp.commands
             Console.Write($"Input number of days, maximum number of days is {maxDays}: ");
             int days = int.Parse(Console.ReadLine());
 
-            ServiceResponse<WeatherForecast> response = await service.GetWeatherForecast(city, days, maxDays);
+            ServiceResponse<WeatherForecast> response = await service.GetWeatherForecast(city, days, maxDays, timeout);
 
-            Console.WriteLine(response.Comment);
+            Console.WriteLine(response.Comment + "\n");
         }
     }
 }
