@@ -8,6 +8,6 @@ namespace WeatherApp.commands
 {
     interface ICommand
     {
-        Task Execute();
+        void Execute();
     }
 }

@@ -11,7 +11,7 @@ namespace WeatherApp
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static void Main(string[] args)
         {
             IWeatherService service = new WeatherService();
             
@@ -32,7 +32,7 @@ namespace WeatherApp
                     case 3: invoker.Command = new FindMaxWeatherCommand(service); break;
                     default: break;
                 }
-                await invoker.ExecuteCommand();
+                invoker.ExecuteCommand();
             }
             while (option != 0);
         }

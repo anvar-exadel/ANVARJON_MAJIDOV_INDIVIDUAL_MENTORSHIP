@@ -11,33 +11,33 @@ namespace WeatherAppUnitTest
     public class WeatherServiceTest
     {
         [Theory]
-        [InlineData("Parisuuu")]
-        [InlineData("jjjjjkkkkkk")]
-        public async Task GetWeatherInfo_UnexistingCity_ReturnsNull(string city)
+        [InlineData("Parisuuu", 900)]
+        [InlineData("jjjjjkkkkkk", 1200)]
+        public void GetWeatherInfo_UnexistingCity_ReturnsNull(string city, int milliseconds)
         {
             //arrange
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
+            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.Null(result.Data);
             Assert.False(result.Success);
-            Assert.Equal("City not found", result.Comment);
+            Assert.Equal($"City: {city}. Error: City was not found.", result.Comment);
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData(" ")]
-        [InlineData("      ")]
-        public async Task GetWeatherInfo_EmptyString_ReturnsNull(string city)
+        [InlineData("", 500)]
+        [InlineData(" ", 1300)]
+        [InlineData("      ", 2100)]
+        public void GetWeatherInfo_EmptyString_ReturnsNull(string city, int milliseconds)
         {
             //arrange
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
+            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.Null(result.Data);
@@ -46,16 +46,16 @@ namespace WeatherAppUnitTest
         }
 
         [Theory]
-        [InlineData("London")]
-        [InlineData("Paris")]
-        [InlineData("washington")]
-        public async Task GetWeatherInfo_ExistingCity_ReturnsWeatherData(string city)
+        [InlineData("London", 3080)]
+        [InlineData("Paris", 3200)]
+        [InlineData("washington", 3800)]
+        public void GetWeatherInfo_ExistingCity_ReturnsWeatherData(string city, int milliseconds)
         {
             //arrange
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = await weatherService.GetWeatherInfo(city);
+            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.NotNull(result.Data);

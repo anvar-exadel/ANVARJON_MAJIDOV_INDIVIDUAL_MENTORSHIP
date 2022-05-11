@@ -15,9 +15,9 @@ namespace WeatherApp.commands
         }
         public CommandInvoker() {}
 
-        public async Task ExecuteCommand()
+        public void ExecuteCommand()
         {
-            await Command.Execute();
+            Command.Execute();
         }
     }
 }
