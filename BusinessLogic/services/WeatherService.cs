@@ -21,7 +21,7 @@ namespace BusinessLogic.services
         {
             string uri = $@"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={key}&units=metric";
 
-            if (city.Trim().Length == 0) return new ServiceResponse<Weather>(null, false, "City name is empty");
+            if (city == null || city.Trim().Length == 0) return new ServiceResponse<Weather>(null, false, "City name is empty");
 
             IDbAccess<Weather> _db = new DbAccess<Weather>();
             Stopwatch sw = Stopwatch.StartNew();
@@ -45,10 +45,11 @@ namespace BusinessLogic.services
 
         public ServiceResponse<WeatherForecast> GetWeatherForecast(string city, int days, int maxDays, int timeout)
         {
+            if (city == null || city.Trim().Length == 0) return new ServiceResponse<WeatherForecast>(null, false, "City name is empty");
+            if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
+
             ServiceResponse<Weather> response = GetWeatherInfo(city, timeout);
             if (!response.Success) return new ServiceResponse<WeatherForecast>(null, false, response.Comment, response.ResponseType);
-            if (city.Trim().Length == 0) return new ServiceResponse<WeatherForecast>(null, false, "City name is empty");
-            if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
 
             string uri = $@"https://api.openweathermap.org/data/2.5/onecall?lat={response.Data.Coord.Lat}&lon={response.Data.Coord.Lon}&exclude=current,alerts,hourly,minutely&appid={key}&units=metric";
             s_cts.CancelAfter(timeout);
