@@ -1,11 +1,12 @@
-﻿using BusinessLogic.interfaces;
-using BusinessLogic.models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WeatherApp.helper;
+using WeatherApp.models;
+using WeatherApp.Models;
 
 namespace WeatherApp.commands
 {
@@ -13,11 +14,13 @@ namespace WeatherApp.commands
     {
         static int timeout = int.Parse(ConfigurationManager.AppSettings["timeout"]);
         static int maxDays = int.Parse(ConfigurationManager.AppSettings["maxDay"]);
-        
-        private readonly IWeatherService service;
-        public ForecastWeatherCommand(IWeatherService service)
+        static string uriBase = ConfigurationManager.AppSettings["uri"];
+
+        private readonly ServerRequestHelper _serverRequest;
+
+        public ForecastWeatherCommand(ServerRequestHelper serverRequest)
         {
-            this.service = service;
+            _serverRequest = serverRequest;
         }
 
         public void Execute()
@@ -27,7 +30,14 @@ namespace WeatherApp.commands
             Console.Write($"Input number of days, maximum number of days is {maxDays}: ");
             int days = int.Parse(Console.ReadLine());
 
-            ServiceResponse<WeatherForecast> response = service.GetWeatherForecast(city, days, maxDays, timeout);
+            string uri = $"{uriBase}/api/weather/forecast/{city}/{days}";
+            var response = _serverRequest.GetData<ServiceResponse<WeatherForecast>>(uri);
+
+            if (response == null)
+            {
+                Console.WriteLine($"{city}: error, cannot make a request\n");
+                return;
+            }
 
             Console.WriteLine(response.Comment + "\n");
         }

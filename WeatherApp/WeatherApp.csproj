@@ -35,6 +35,9 @@
   <PropertyGroup />
   <PropertyGroup />
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -53,17 +56,17 @@
     <Compile Include="commands\ForecastWeatherCommand.cs" />
     <Compile Include="commands\ICommand.cs" />
     <Compile Include="helper\MenuHelper.cs" />
+    <Compile Include="helper\ServerRequestHelper.cs" />
+    <Compile Include="models\ResponseType.cs" />
+    <Compile Include="models\ServiceResponse.cs" />
+    <Compile Include="models\Weather.cs" />
+    <Compile Include="models\WeatherForecast.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj">
-      <Project>{4e0954ac-c611-4873-b378-be66b37a429c}</Project>
-      <Name>BusinessLogic</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
