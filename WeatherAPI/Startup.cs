@@ -50,6 +50,8 @@ namespace WeatherAPI
 
             app.UseRouting();
 
+            app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().WithOrigins("http:client url"));
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
