@@ -1,22 +1,25 @@
-﻿using BusinessLogic.interfaces;
-using BusinessLogic.models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WeatherApp.helper;
+using WeatherApp.models;
+using WeatherApp.Models;
 
 namespace WeatherApp.commands
 {
     class FindMaxWeatherCommand : ICommand
     {
-        private readonly IWeatherService service;
         static bool debug = bool.Parse(ConfigurationManager.AppSettings["debug"]);
+        static string uriBase = ConfigurationManager.AppSettings["uri"];
         static int timeout = int.Parse(ConfigurationManager.AppSettings["timeout"]);
-        public FindMaxWeatherCommand(IWeatherService service)
+        private readonly ServerRequestHelper _serverRequest;
+        
+        public FindMaxWeatherCommand(ServerRequestHelper serverRequest)
         {
-            this.service = service;
+            _serverRequest = serverRequest;
         }
 
         private void PrintAdditionalInfo(ServiceResponse<Weather> response, string city)
@@ -36,17 +39,24 @@ namespace WeatherApp.commands
 
             Parallel.ForEach(cities, c =>
             {
-                ServiceResponse<Weather> response = service.GetWeatherInfo(c, timeout);
+                string uri = $"{uriBase}/api/weather/current/{c}";
+                ServiceResponse<Weather> response = _serverRequest.GetData<ServiceResponse<Weather>>(uri);
 
-                if (debug) PrintAdditionalInfo(response, c);
+                if (response == null)
+                {
+                    Console.WriteLine($"{c}: error, cannot make a request");
+                    fail++;
+                }
 
-                if (response.Success)
+                if (response != null && debug) PrintAdditionalInfo(response, c);
+
+                if (response != null && response.Success)
                 {
                     weatherList.Add(response.Data);
                     success++;
                 }
-                else if(response.ResponseType == ResponseType.Failed) fail++;
-                else if(response.ResponseType == ResponseType.Canceled) canceled++;
+                else if(response != null && response.ResponseType == ResponseType.Failed) fail++;
+                else if(response != null && response.ResponseType == ResponseType.Canceled) canceled++;
             });
 
             if (weatherList.Count <= 0)
