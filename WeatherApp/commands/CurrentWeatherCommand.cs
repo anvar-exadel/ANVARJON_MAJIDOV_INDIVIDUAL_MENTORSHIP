@@ -25,8 +25,8 @@ namespace WeatherApp.commands
             
             var response = service.GetWeatherInfo(city, timeout);
 
-            if (response.Success) Console.WriteLine($"In {response.Data.Name} {response.Data.Main.Temp}°C. {response.Comment}");
-            else Console.WriteLine(response.Comment);
+            if (response.Success) Console.WriteLine($"In {response.Data.Name} {response.Data.Main.Temp}°C. {response.Data.Comment}");
+            else Console.WriteLine(response.Message);
 
             Console.WriteLine();
         }

@@ -22,7 +22,7 @@ namespace WeatherApp.commands
         private void PrintAdditionalInfo(ServiceResponse<Weather> response, string city)
         {
             if (response.Success) Console.WriteLine($"City: {response.Data.Name}.Temperature: {response.Data.Main.Temp}. Timer: {response.Milliseconds} ms.");
-            else Console.WriteLine($"{response.Comment} Timer: {response.Milliseconds} ms.");
+            else Console.WriteLine($"{response.Message} Timer: {response.Milliseconds} ms.");
         }
 
         public void Execute()
