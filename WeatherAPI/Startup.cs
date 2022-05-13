@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +14,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WeatherAPI.data;
+using WeatherAPI.helper;
+using WeatherAPI.services;
 
 namespace WeatherAPI
 {
@@ -28,8 +32,14 @@ namespace WeatherAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            string conStr = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IWeatherService, WeatherService>();
+            services.AddScoped<IWebWeatherService, WebWeatherService>();
+
             services.AddControllers();
+            services.AddDbContext<AppDbContext>(o => o.UseSqlite(conStr));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherAPI", Version = "v1" });

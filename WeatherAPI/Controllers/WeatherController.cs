@@ -3,6 +3,7 @@ using BusinessLogic.models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using WeatherAPI.services;
 
 namespace WeatherAPI.Controllers
 {
@@ -10,32 +11,26 @@ namespace WeatherAPI.Controllers
     [ApiController]
     public class WeatherController : ControllerBase
     {
-        private readonly IWeatherService _weatherService;
-        private readonly IConfiguration _configuration;
-
-        public WeatherController(IWeatherService weatherService, IConfiguration configuration)
+        private readonly IWebWeatherService _weatherService;
+        public WeatherController(IWebWeatherService weatherService, IConfiguration configuration)
         {
             _weatherService = weatherService;
-            _configuration = configuration;
         }
 
         [HttpGet("current/{city}")]
-        public IActionResult GetCurrentWeather(string city)
+        public ActionResult<ServiceResponse<Weather>> GetCurrentWeather(string city)
         {
-            int time = _configuration.GetValue<int>("WeatherAppSettings:timeout");
-
-            ServiceResponse<Weather> response = _weatherService.GetWeatherInfo(city, time);
+            ServiceResponse<Weather> response = _weatherService.GetCurrent(city);
+            
             if (response.Success) return Ok(response);
             return BadRequest(response);
         }
 
         [HttpGet("forecast/{city}/{days}")]
-        public IActionResult GetForecast(string city, int days)
+        public ActionResult<ServiceResponse<WeatherForecast>> GetForecast(string city, int days)
         {
-            int time = _configuration.GetValue<int>("WeatherAppSettings:timeout");
-            int maxDays = _configuration.GetValue<int>("WeatherAppSettings:maxForecastDays");
-
-            ServiceResponse<WeatherForecast> response = _weatherService.GetWeatherForecast(city, days, maxDays, time);
+            ServiceResponse<WeatherForecast> response = _weatherService.GetForecast(city, days);
+            
             if(response.Success) return Ok(response);
             return BadRequest(response);
         }
