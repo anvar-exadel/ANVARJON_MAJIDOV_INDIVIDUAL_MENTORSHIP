@@ -11,7 +11,7 @@ namespace WeatherApp.models
     {
         public T Data { get; set; }
         public bool Success { get; set; } = true;
-        public string Comment { get; set; }
+        public string Message { get; set; }
         public long Milliseconds { get; set; }
         public ResponseType ResponseType { get; set; }
     }

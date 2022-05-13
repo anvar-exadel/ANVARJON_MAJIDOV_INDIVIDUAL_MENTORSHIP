@@ -38,8 +38,8 @@ namespace WeatherApp.commands
                 Console.WriteLine($"{city}: error, cannot make a request\n");
                 return;
             }
-
-            Console.WriteLine(response.Comment + "\n");
+            if(response.Success) Console.WriteLine(response.Data.Comment + "\n");
+            else Console.WriteLine(response.Message);
         }
     }
 }

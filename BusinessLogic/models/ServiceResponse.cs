@@ -9,31 +9,44 @@ namespace BusinessLogic.models
     {
         public ServiceResponse()
         {}
-        public ServiceResponse(T data, bool success, string comment)
+        public ServiceResponse(T data, bool success, string message)
         {
             Data = data;
             Success = success;
-            Comment = comment;
+            Message = message;
         }
-        public ServiceResponse(T data, bool success, string comment, ResponseType responseType)
+        public ServiceResponse(T data, bool success, long milliseconds, ResponseType responseType)
         {
             Data = data;
             Success = success;
-            Comment = comment;
+            Milliseconds = milliseconds;
             ResponseType = responseType;
         }
-        public ServiceResponse(T data, bool success, string comment, long milliseconds, ResponseType responseType)
+        public ServiceResponse(T data, bool success, ResponseType responseType)
         {
             Data = data;
             Success = success;
-            Comment = comment;
+            ResponseType = responseType;
+        }
+        public ServiceResponse(T data, bool success, string message, ResponseType responseType)
+        {
+            Data = data;
+            Success = success;
+            Message = message;
+            ResponseType = responseType;
+        }
+        public ServiceResponse(T data, bool success, string message, long milliseconds, ResponseType responseType)
+        {
+            Data = data;
+            Success = success;
+            Message = message;
             Milliseconds = milliseconds;
             ResponseType = responseType;
         }
 
         public T Data { get; set; }
         public bool Success { get; set; } = true;
-        public string Comment { get; set; }
+        public string Message { get; set; }
         public long Milliseconds { get; set; }
         public ResponseType ResponseType { get; set; }
     }

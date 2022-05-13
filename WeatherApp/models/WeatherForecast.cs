@@ -6,8 +6,9 @@ namespace WeatherApp.Models
 {
     public class WeatherForecast
     {
-        public string City { get; set; }
+        public string Name { get; set; }
         public int Cnt { get; set; }
+        public string Comment { get; set; }
         public List<DailyInner> Daily { get; set; }
     }
     public class DailyInner

@@ -24,7 +24,7 @@ namespace WeatherAppUnitTest
             //assert
             Assert.Null(result.Data);
             Assert.False(result.Success);
-            Assert.Equal($"City: {city}. Error: City was not found.", result.Comment);
+            Assert.Equal($"City: {city}. Error: City was not found.", result.Message);
         }
 
         [Theory]
@@ -42,7 +42,7 @@ namespace WeatherAppUnitTest
             //assert
             Assert.Null(result.Data);
             Assert.False(result.Success);
-            Assert.Equal("City name is empty", result.Comment);
+            Assert.Equal("City name is empty", result.Message);
         }
 
         [Theory]
@@ -60,7 +60,7 @@ namespace WeatherAppUnitTest
             //assert
             Assert.NotNull(result.Data);
             Assert.True(result.Success);
-            Assert.Equal(WeatherHelper.GetWeatherComment(result.Data.Main.Temp), result.Comment);
+            Assert.Equal(WeatherHelper.GetWeatherComment(result.Data.Main.Temp), result.Data.Comment);
         }
     }
 }
