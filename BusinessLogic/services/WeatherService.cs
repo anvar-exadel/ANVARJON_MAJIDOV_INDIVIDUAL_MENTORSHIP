@@ -39,8 +39,8 @@ namespace BusinessLogic.services
             if (!weather.Success)
                 return new ServiceResponse<Weather>(null, false, $"City: {city}. Error: City was not found.", sw.ElapsedMilliseconds, ResponseType.Failed);
 
-            string comment = WeatherHelper.GetWeatherComment(weather.Data.Main.Temp);
-            return new ServiceResponse<Weather>(weather.Data, true, comment, sw.ElapsedMilliseconds, ResponseType.Success);
+            weather.Data.Comment = WeatherHelper.GetWeatherComment(weather.Data.Main.Temp);
+            return new ServiceResponse<Weather>(weather.Data, true, sw.ElapsedMilliseconds, ResponseType.Success);
         }
 
         public ServiceResponse<WeatherForecast> GetWeatherForecast(string city, int days, int maxDays, int timeout)
@@ -49,7 +49,7 @@ namespace BusinessLogic.services
             if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
 
             ServiceResponse<Weather> response = GetWeatherInfo(city, timeout);
-            if (!response.Success) return new ServiceResponse<WeatherForecast>(null, false, response.Comment, response.ResponseType);
+            if (!response.Success) return new ServiceResponse<WeatherForecast>(null, false, response.Message, response.ResponseType);
 
             string uri = $@"https://api.openweathermap.org/data/2.5/onecall?lat={response.Data.Coord.Lat}&lon={response.Data.Coord.Lon}&exclude=current,alerts,hourly,minutely&appid={key}&units=metric";
             s_cts.CancelAfter(timeout);
@@ -67,10 +67,10 @@ namespace BusinessLogic.services
             DbResponse<WeatherForecast> weather = task.Result;
 
             weather.Data.Cnt = days;
-            weather.Data.City = response.Data.Name;
+            weather.Data.Name = response.Data.Name;
+            weather.Data.Comment = WeatherHelper.GetWeatherForecastOutput(weather.Data);
 
-            string comment = WeatherHelper.GetWeatherForecastOutput(weather.Data);
-            return new ServiceResponse<WeatherForecast>(weather.Data, true, comment, ResponseType.Success);
+            return new ServiceResponse<WeatherForecast>(weather.Data, true, ResponseType.Success);
         }
     }
 }

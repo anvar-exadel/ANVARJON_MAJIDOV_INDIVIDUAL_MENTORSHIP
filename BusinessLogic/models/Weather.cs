@@ -5,6 +5,7 @@ namespace BusinessLogic.models
         public Main Main { get; set; }
         public Coordinate Coord { get; set; }
         public string Name { get; set; }
+        public string Comment { get; set; }
     }
     public class Coordinate
     {
