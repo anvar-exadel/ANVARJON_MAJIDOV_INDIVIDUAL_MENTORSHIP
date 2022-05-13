@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using BusinessLogic.interfaces;
 using BusinessLogic.models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using WeatherAPI.data;
 using WeatherAPI.models;
@@ -67,10 +68,51 @@ namespace WeatherAPI.services
         {
             int time = _configuration.GetValue<int>("WeatherAppSettings:timeoutInMilliseconds");
             int maxDays = _configuration.GetValue<int>("WeatherAppSettings:maxForecastDays");
+            city = city.ToLower();
+
+            Dictionary<string, int> cities = _configuration.GetSection("WebCities").GetChildren().ToDictionary(x => x.Key, x => int.Parse(x.Value));
+            if(!cities.ContainsKey(city.ToLower())) return _weatherService.GetWeatherForecast(city, days, maxDays, time);
+
+            RemoveInvalidWeathers(cities);
+
+            //return data if is exists in db
+            WebWeatherForecast weatherForecast = _context.WebWeatherForecasts.Include(w => w.Daily).FirstOrDefault(w => w.Name.ToLower() == city && w.Cnt == days);
+            if (weatherForecast != null)
+            {
+                WeatherForecast weatherResponse = new WeatherForecast();
+                Map_WebWeatherForecast_To_WeatherForecast(weatherForecast, weatherResponse);
+
+                return new ServiceResponse<WeatherForecast>(weatherResponse, true, ResponseType.Success);
+            }
 
             ServiceResponse<WeatherForecast> response = _weatherService.GetWeatherForecast(city, days, maxDays, time);
+            if(!response.Success) return response;
+
+            //successfull response save to database and return
+            WebWeatherForecast webWeatherForecast = new WebWeatherForecast();
+            Map_WeatherForecast_To_WebWeatherForecast(response.Data, webWeatherForecast);
+            webWeatherForecast.CreatedTime = DateTime.Now;
+
+            _context.WebWeatherForecasts.Add(webWeatherForecast);
+            _context.SaveChanges();
+
             return response;
         }
+        private void Map_WeatherForecast_To_WebWeatherForecast(WeatherForecast src, WebWeatherForecast dest)
+        {
+            dest.Name = src.Name;
+            dest.Cnt = src.Cnt;
+            dest.Comment = src.Comment;
+            dest.Daily = src.Daily.Select(d => new WebDailyTemp(d.Temp.Day, d.Temp.Max, d.Temp.Min)).ToList();
+        }
+        private void Map_WebWeatherForecast_To_WeatherForecast(WebWeatherForecast src, WeatherForecast dest)
+        {
+            dest.Name = src.Name;
+            dest.Cnt = src.Cnt;
+            dest.Comment = src.Comment;
+            dest.Daily = src.Daily.Select(d => new DailyInner(new Temp(d.Day, d.Min, d.Max))).ToList();
+        }
+
         private void RemoveInvalidWeathers(Dictionary<string, int> cities)
         {
             DateTime curDate = DateTime.Now;

@@ -8,6 +8,9 @@ namespace WeatherAPI.data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {}
         public DbSet<WebWeather> WebWeathers { get; set; }
+        public DbSet<WebWeatherForecast> WebWeatherForecasts { get; set; }
+        public DbSet<WebDailyTemp> DailyTemperatures { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Write Fluent API configurations here
