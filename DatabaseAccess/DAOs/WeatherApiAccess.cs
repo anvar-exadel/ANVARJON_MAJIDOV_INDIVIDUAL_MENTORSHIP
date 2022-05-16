@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DatabaseAccess
 {
-    public class DbAccess<T> : IDbAccess<T> where T : class
+    public class DbAccess<T> : IWeatherApiAccess<T> where T : class
     {
         private readonly HttpClient _httpClient = new HttpClient();
         public DbResponse<T> GetWeatherData(string uri)

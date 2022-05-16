@@ -23,7 +23,7 @@ namespace BusinessLogic.services
 
             if (city == null || city.Trim().Length == 0) return new ServiceResponse<Weather>(null, false, "City name is empty");
 
-            IDbAccess<Weather> _db = new DbAccess<Weather>();
+            IWeatherApiAccess<Weather> _db = new WeatherApiAccess<Weather>();
             Stopwatch sw = Stopwatch.StartNew();
             var task = Task.Run(() =>
             {
@@ -34,7 +34,7 @@ namespace BusinessLogic.services
 
             if(!isTaskCompleted) return new ServiceResponse<Weather>(null, false, $"Weather request for {city} was canceled due to a timeout.", sw.ElapsedMilliseconds, ResponseType.Canceled);
 
-            DbResponse<Weather> weather = task.Result;
+            WeatherApiResponse<Weather> weather = task.Result;
 
             if (!weather.Success)
                 return new ServiceResponse<Weather>(null, false, $"City: {city}. Error: City was not found.", sw.ElapsedMilliseconds, ResponseType.Failed);
@@ -54,7 +54,7 @@ namespace BusinessLogic.services
             string uri = $@"https://api.openweathermap.org/data/2.5/onecall?lat={response.Data.Coord.Lat}&lon={response.Data.Coord.Lon}&exclude=current,alerts,hourly,minutely&appid={key}&units=metric";
             s_cts.CancelAfter(timeout);
 
-            IDbAccess<WeatherForecast> _db = new DbAccess<WeatherForecast>();
+            IWeatherApiAccess<WeatherForecast> _db = new WeatherApiAccess<WeatherForecast>();
 
             var task = Task.Run(() =>
             {
@@ -64,7 +64,7 @@ namespace BusinessLogic.services
 
             if (!isTaskCompleted) return new ServiceResponse<WeatherForecast>(null, false, $"Weather request for {city} was canceled due to a timeout.", ResponseType.Canceled);
 
-            DbResponse<WeatherForecast> weather = task.Result;
+            WeatherApiResponse<WeatherForecast> weather = task.Result;
 
             weather.Data.Cnt = days;
             weather.Data.Name = response.Data.Name;
