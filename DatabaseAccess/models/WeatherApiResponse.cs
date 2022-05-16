@@ -4,15 +4,15 @@ using System.Text;
 
 namespace DatabaseAccess.models
 {
-    public class DbResponse<T>
+    public class WeatherApiResponse<T>
     {
-        public DbResponse(T data, bool success, string message)
+        public WeatherApiResponse(T data, bool success, string message)
         {
             Data = data;
             Success = success;
             Message = message;
         }
-        public DbResponse(T data)
+        public WeatherApiResponse(T data)
         {
             Data = data;
         }

@@ -6,6 +6,7 @@
 .vs
 .vscode
 ./Migrations
+Migrations
 
 # User-specific files
 *.rsuser

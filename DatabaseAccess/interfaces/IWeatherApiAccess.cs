@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DatabaseAccess.interfaces
 {
-    public interface IDbAccess<T>
+    public interface IWeatherApiAccess<T>
     {
-        DbResponse<T> GetWeatherData(string uri);
+        WeatherApiResponse<T> GetWeatherData(string uri);
     }
 }

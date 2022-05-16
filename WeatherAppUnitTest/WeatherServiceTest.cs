@@ -19,7 +19,7 @@ namespace WeatherAppUnitTest
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
+            BusinessServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.Null(result.Data);
@@ -37,7 +37,7 @@ namespace WeatherAppUnitTest
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
+            BusinessServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.Null(result.Data);
@@ -55,7 +55,7 @@ namespace WeatherAppUnitTest
             WeatherService weatherService = new WeatherService();
 
             //act
-            ServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
+            BusinessServiceResponse<Weather> result = weatherService.GetWeatherInfo(city, milliseconds);
 
             //assert
             Assert.NotNull(result.Data);
