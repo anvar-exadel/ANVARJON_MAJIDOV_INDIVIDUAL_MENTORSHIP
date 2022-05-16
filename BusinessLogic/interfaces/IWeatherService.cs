@@ -6,7 +6,7 @@ namespace BusinessLogic.interfaces
 {
     public interface IWeatherService
     {
-        ServiceResponse<Weather> GetWeatherInfo(string city, int timeoutMilliseconds);
-        ServiceResponse<WeatherForecast> GetWeatherForecast(string city, int days, int maxDays, int timeout);
+        BusinessServiceResponse<Weather> GetWeatherInfo(string city, int timeoutMilliseconds);
+        BusinessServiceResponse<WeatherForecast> GetWeatherForecast(string city, int days, int maxDays, int timeout);
     }
 }
