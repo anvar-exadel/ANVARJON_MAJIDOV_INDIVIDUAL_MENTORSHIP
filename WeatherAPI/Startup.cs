@@ -16,7 +16,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WeatherAPI.data;
 using WeatherAPI.helper;
-using WeatherAPI.services;
 
 namespace WeatherAPI
 {
