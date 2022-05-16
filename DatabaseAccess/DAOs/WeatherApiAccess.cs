@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace DatabaseAccess
 {
-    public class DbAccess<T> : IDbAccess<T> where T : class
+    public class WeatherApiAccess<T> : IWeatherApiAccess<T> where T : class
     {
         private readonly HttpClient _httpClient = new HttpClient();
-        public DbResponse<T> GetWeatherData(string uri)
+        public WeatherApiResponse<T> GetWeatherData(string uri)
         {
             HttpResponseMessage response = _httpClient.GetAsync(uri).Result;
 
@@ -20,9 +20,9 @@ namespace DatabaseAccess
             {
                 string content = response.Content.ReadAsStringAsync().Result;
                 T data = JsonConvert.DeserializeObject<T>(content);
-                return new DbResponse<T>(data);
+                return new WeatherApiResponse<T>(data);
             }
-            return new DbResponse<T>(null, false, "Bad request");
+            return new WeatherApiResponse<T>(null, false, "Bad request");
         }
     }
 }

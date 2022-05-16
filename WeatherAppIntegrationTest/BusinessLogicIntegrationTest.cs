@@ -20,7 +20,7 @@ namespace WeatherAppIntegrationTest
             WeatherService _service = new WeatherService();
             
             //act
-            ServiceResponse<Weather> response = _service.GetWeatherInfo(city, milliseconds);
+            BusinessServiceResponse<Weather> response = _service.GetWeatherInfo(city, milliseconds);
             double temperature = response.Data.Main.Temp;
 
             //assert

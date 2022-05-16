@@ -16,7 +16,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WeatherAPI.data;
 using WeatherAPI.helper;
-using WeatherAPI.services;
 
 namespace WeatherAPI
 {
@@ -36,7 +35,6 @@ namespace WeatherAPI
 
             services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             services.AddScoped<IWeatherService, WeatherService>();
-            services.AddScoped<IWebWeatherService, WebWeatherService>();
 
             services.AddControllers();
             services.AddDbContext<AppDbContext>(o => o.UseSqlite(conStr));
