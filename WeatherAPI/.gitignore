@@ -6,6 +6,7 @@
 .vs
 .vscode
 ./Migrations
+localDb.db
 Migrations
 
 # User-specific files
