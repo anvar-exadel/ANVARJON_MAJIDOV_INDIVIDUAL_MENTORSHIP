@@ -5,37 +5,37 @@ using System.Text;
 
 namespace BusinessLogic.models
 {
-    public class BusinessServiceResponse<T>
+    public class ServiceResponse<T>
     {
-        public BusinessServiceResponse()
+        public ServiceResponse()
         {}
-        public BusinessServiceResponse(T data, bool success, string message)
+        public ServiceResponse(T data, bool success, string message)
         {
             Data = data;
             Success = success;
             Message = message;
         }
-        public BusinessServiceResponse(T data, bool success, long milliseconds, ResponseType responseType)
+        public ServiceResponse(T data, bool success, long milliseconds, ResponseType responseType)
         {
             Data = data;
             Success = success;
             Milliseconds = milliseconds;
             ResponseType = responseType;
         }
-        public BusinessServiceResponse(T data, bool success, ResponseType responseType)
+        public ServiceResponse(T data, bool success, ResponseType responseType)
         {
             Data = data;
             Success = success;
             ResponseType = responseType;
         }
-        public BusinessServiceResponse(T data, bool success, string message, ResponseType responseType)
+        public ServiceResponse(T data, bool success, string message, ResponseType responseType)
         {
             Data = data;
             Success = success;
             Message = message;
             ResponseType = responseType;
         }
-        public BusinessServiceResponse(T data, bool success, string message, long milliseconds, ResponseType responseType)
+        public ServiceResponse(T data, bool success, string message, long milliseconds, ResponseType responseType)
         {
             Data = data;
             Success = success;
