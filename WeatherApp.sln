@@ -8,12 +8,26 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BusinessLogic", "BusinessLogic\BusinessLogic.csproj", "{4E0954AC-C611-4873-B378-BE66B37A429C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DatabaseAccess", "DatabaseAccess\DatabaseAccess.csproj", "{DEB60549-FC94-4B41-9DED-BE84CD15D5F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E} = {EFCF2736-0710-4AA0-8B63-1CBA1013F92E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherAppUnitTest", "WeatherAppUnitTest\WeatherAppUnitTest.csproj", "{D883705C-7A36-4561-A496-C8065AFDF947}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6} = {FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherAppIntegrationTest", "WeatherAppIntegrationTest\WeatherAppIntegrationTest.csproj", "{A1CE4CE2-B487-4C0E-AD36-EC6DAEC7F7F2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6} = {FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherAPI", "WeatherAPI\WeatherAPI.csproj", "{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherAPI", "WeatherAPI\WeatherAPI.csproj", "{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E} = {EFCF2736-0710-4AA0-8B63-1CBA1013F92E}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +59,10 @@ Global
 		{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFFC8DC-1726-45D0-AFA5-045F3BC411B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

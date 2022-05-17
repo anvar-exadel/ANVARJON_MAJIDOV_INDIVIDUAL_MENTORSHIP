@@ -18,6 +18,11 @@ namespace BusinessLogic.helpers
             return comment;
         }
 
+        public static bool isCityEmpty(string city)
+        {
+            return city == null || city.Trim().Length == 0;
+        }
+
         public static string GetWeatherForecastOutput(WeatherForecast weather)
         {
             StringBuilder sb = new StringBuilder();
