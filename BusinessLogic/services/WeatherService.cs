@@ -20,7 +20,7 @@ namespace BusinessLogic.services
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private string key = "d6f8cca8ef14b8feb9bf0320e4cd770b";
-        private Dictionary<string, int> cities;
+        private readonly Dictionary<string, int> cities;
         public WeatherService(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
@@ -30,13 +30,14 @@ namespace BusinessLogic.services
 
         public ServiceResponse<Weather> GetWeatherInfo(string city, int timeoutMilliseconds)
         {
+            string lcity = city.ToLower();
             IWeatherApiAccess<Weather> weatherApi = new WeatherApiAccess<Weather>();
             string uri = $@"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={key}&units=metric";
 
             if (WeatherHelper.isCityEmpty(city)) return new ServiceResponse<Weather>(null, false, "City name is empty");
 
             RemoveInvalidWeathers();
-            WebWeather webWeather = _context.WebWeathers.FirstOrDefault(w => w.Name.ToLower() == city && w.WeatherDay == DateTime.Today);
+            WebWeather webWeather = _context.WebWeathers.FirstOrDefault(w => w.Name.ToLower() == lcity && w.WeatherDay == DateTime.Today);
             if (webWeather != null) return new ServiceResponse<Weather>(GetWeatherFromWebWeather(webWeather), true, ResponseType.Success);
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -59,13 +60,14 @@ namespace BusinessLogic.services
 
         public ServiceResponse<WeatherForecast> GetWeatherForecast(string city, int days, int maxDays, int timeout)
         {
+            string lcity = city.ToLower();
             IWeatherApiAccess<WeatherForecast> _db = new WeatherApiAccess<WeatherForecast>();
 
             if (WeatherHelper.isCityEmpty(city)) return new ServiceResponse<WeatherForecast>(null, false, "City name is empty");
             if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
 
             RemoveInvalidWeathers();
-            WebWeatherForecast weatherForecastDb = _context.WeatherForecasts.Include(w => w.Daily).FirstOrDefault(w => w.Name.ToLower() == city && w.Cnt == days);
+            WebWeatherForecast weatherForecastDb = _context.WeatherForecasts.Include(w => w.Daily).FirstOrDefault(w => w.Name.ToLower() == lcity && w.Cnt == days);
             if (weatherForecastDb != null) return new ServiceResponse<WeatherForecast>(GetWeatherForecast(weatherForecastDb), true, ResponseType.Success);
 
             ServiceResponse<Weather> response = GetWeatherInfo(city, timeout);
@@ -86,6 +88,26 @@ namespace BusinessLogic.services
 
             SaveWeatherForecastToDb(weather);
             return new ServiceResponse<WeatherForecast>(weather, true, ResponseType.Success);
+        }
+
+        public ServiceResponse<List<Weather>> GetWeatherHistory(string city, int intervalInSeconds)
+        {
+            if (WeatherHelper.isCityEmpty(city)) return new ServiceResponse<List<Weather>>(null, false, "City name is empty");
+
+            List<Weather> webWeathers = _context.WebWeathers
+                .Where(w => w.Name.ToLower() == city && w.WeatherDay >= DateTime.Now.AddSeconds(-intervalInSeconds))
+                .Select(webWeather => new Weather
+                {
+                    Name = webWeather.Name,
+                    Comment = webWeather.Comment,
+                    Main = new Main { Temp = webWeather.Temperature },
+                    Coord = new Coordinate { Lat = webWeather.Lat, Lon = webWeather.Lon }
+                })
+                .ToList();
+
+            if (webWeathers.Count <= 0) return new ServiceResponse<List<Weather>>(null, false, "History is empty", ResponseType.Failed);
+            
+            return new ServiceResponse<List<Weather>>(webWeathers, true, ResponseType.Success);
         }
 
         private void SaveWeatherForecastToDb(WeatherForecast weather)
@@ -154,13 +176,15 @@ namespace BusinessLogic.services
 
         private void RemoveInvalidWeathers()
         {
-            DateTime curDate = DateTime.Now;
-
-            List<WebWeather> weathers = _context.WebWeathers.ToList();
-            foreach (WebWeather w in weathers)
-                if (w.CreatedDate.AddSeconds(cities[w.Name.ToLower()]) <= curDate)
-                    _context.Remove(w);
-
+            foreach (WebWeather w in _context.WebWeathers.ToArray())
+            {
+                DateTime weatherDateLimit = w.CreatedDate.AddSeconds(cities[w.Name.ToLower()]);
+                DateTime curDate = DateTime.Now;
+                if (weatherDateLimit <= curDate)
+                {
+                    _context.WebWeathers.Remove(w);
+                }
+            }
             _context.SaveChanges();
         }
     }
