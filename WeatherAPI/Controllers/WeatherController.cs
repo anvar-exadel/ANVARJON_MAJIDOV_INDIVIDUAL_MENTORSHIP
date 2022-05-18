@@ -56,8 +56,20 @@ namespace WeatherAPI.Controllers
                 _logger.LogInformation($"Forecast weather returned errors: {response.Message}");
                 return BadRequest(response);
             }
-
             _logger.LogInformation($"Succesfully returned data for weather forecast: {response.Data.Comment}");
+            return Ok(response);
+        }
+
+        [HttpGet("history/{city}/{interval}")]
+        public ActionResult<ServiceResponse<List<Weather>>> GetHistory(string city, int interval)
+        {
+            ServiceResponse<List<Weather>> response = _weatherService.GetWeatherHistory(city, interval);
+            if (!response.Success)
+            {
+                _logger.LogInformation($"Weather history returned errors: {response.Message}");
+                return BadRequest(response);
+            }
+            _logger.LogInformation($"Succesfully returned data for weather history");
             return Ok(response);
         }
     }

@@ -11,8 +11,8 @@ namespace DatabaseAccess
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
         public AppDbContext() { }
 
-        public DbSet<WebWeather> WebWeathers { get; set; }
-        public DbSet<WebDailyTemp> WebDailyTemps { get; set; }
-        public DbSet<WebWeatherForecast> WeatherForecasts { get; set; }
+        public virtual DbSet<WebWeather> WebWeathers { get; set; }
+        public virtual DbSet<WebDailyTemp> WebDailyTemps { get; set; }
+        public virtual DbSet<WebWeatherForecast> WeatherForecasts { get; set; }
     }
 }
