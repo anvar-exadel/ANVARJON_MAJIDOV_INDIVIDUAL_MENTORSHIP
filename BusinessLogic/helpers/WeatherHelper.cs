@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using WeatherAPI.models;
 
 namespace BusinessLogic.helpers
 {
