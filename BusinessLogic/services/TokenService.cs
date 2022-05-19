@@ -23,7 +23,8 @@ namespace BusinessLogic.services
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName)
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, GetUserRole(user.UserRole))
             };
 
             SigningCredentials credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
@@ -39,6 +40,15 @@ namespace BusinessLogic.services
             SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(securityToken);
+        }
+        private string GetUserRole(UserRole role)
+        {
+            switch (role)
+            {
+                case UserRole.User: return "User";
+                case UserRole.Admin: return "Admin";
+            }
+            return "User";
         }
     }
 }

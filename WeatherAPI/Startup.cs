@@ -31,6 +31,8 @@ namespace WeatherAPI
 
             services.AddDbContext<AppDbContext>(o => o.UseSqlite(conStr));
             services.AddScoped<IWeatherService, WeatherService>();
+            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
