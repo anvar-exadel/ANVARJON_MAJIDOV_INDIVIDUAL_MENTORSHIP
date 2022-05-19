@@ -1,6 +1,7 @@
 using BusinessLogic.interfaces;
 using BusinessLogic.services;
 using DatabaseAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace WeatherAPI
 {
@@ -33,6 +36,17 @@ namespace WeatherAPI
             services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["TokenKey"])),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -56,6 +70,8 @@ namespace WeatherAPI
             app.UseRouting();
 
             app.UseCors(x => x.AllowAnyMethod().AllowAnyHeader().WithOrigins("http:client url"));
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
