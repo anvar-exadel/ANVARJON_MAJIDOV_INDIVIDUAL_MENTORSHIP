@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BusinessLogic.interfaces;
 using BusinessLogic.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -60,6 +61,7 @@ namespace WeatherAPI.Controllers
             return Ok(response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("history/{city}/{interval}")]
         public ActionResult<ServiceResponse<List<Weather>>> GetHistory(string city, int interval)
         {
