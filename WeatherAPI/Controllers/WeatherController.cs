@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,11 +62,11 @@ namespace WeatherAPI.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         [HttpGet("history/{city}/{interval}")]
-        public ActionResult<ServiceResponse<List<Weather>>> GetHistory(string city, int interval)
+        public ActionResult<ServiceResponse<List<WeatherHistory>>> GetHistory(string city, int interval)
         {
-            ServiceResponse<List<Weather>> response = _weatherService.GetWeatherHistory(city, interval);
+            ServiceResponse<List<WeatherHistory>> response = _weatherService.GetWeatherHistory(city, interval, requestTimeout);
             if (!response.Success)
             {
                 _logger.LogInformation($"Weather history returned errors: {response.Message}");
