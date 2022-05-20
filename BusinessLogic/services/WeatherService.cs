@@ -6,6 +6,8 @@ using DatabaseAccess.interfaces;
 using DatabaseAccess.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
+using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -90,24 +92,45 @@ namespace BusinessLogic.services
             return new ServiceResponse<WeatherForecast>(weather, true, ResponseType.Success);
         }
 
-        public ServiceResponse<List<Weather>> GetWeatherHistory(string city, int intervalInSeconds)
+        public ServiceResponse<List<WeatherHistory>> GetWeatherHistory(string city, int intervalInSeconds, int timeout)
         {
-            if (WeatherHelper.isCityEmpty(city)) return new ServiceResponse<List<Weather>>(null, false, "City name is empty");
+            DateTime dateLimit = DateTime.Now.AddSeconds(-intervalInSeconds); 
+            DateTime dateLimitDay = new DateTime(dateLimit.Year, dateLimit.Month, dateLimit.Day);//this doesn't contain minutes/seconds/etc
 
-            List<Weather> webWeathers = _context.WebWeathers
-                .Where(w => w.Name.ToLower() == city && w.WeatherDay >= DateTime.Now.AddSeconds(-intervalInSeconds))
-                .Select(webWeather => new Weather
-                {
-                    Name = webWeather.Name,
-                    Comment = webWeather.Comment,
-                    Main = new Main { Temp = webWeather.Temperature },
-                    Coord = new Coordinate { Lat = webWeather.Lat, Lon = webWeather.Lon }
-                })
-                .ToList();
+            List<WeatherHistory> list = new List<WeatherHistory>();
+            for (DateTime d = dateLimitDay; d <= DateTime.Today; d = d.AddDays(1))
+            {
+                var response = GetWeatherHistoryForOneDay(city, d, timeout).Data;
+                if(response != null) list.Add(response);
+            }
 
-            if (webWeathers.Count <= 0) return new ServiceResponse<List<Weather>>(null, false, "History is empty", ResponseType.Failed);
-            
-            return new ServiceResponse<List<Weather>>(webWeathers, true, ResponseType.Success);
+            foreach (var item in list)
+            {
+                List<Hour> filtered = item.Hours.Where(h => h.Time >= dateLimit && h.Time <= DateTime.Now).ToList();
+                item.Hours = new List<Hour>(filtered);
+            }
+
+            return new ServiceResponse<List<WeatherHistory>>(list, true, ResponseType.Success);
+        }
+
+        private ServiceResponse<WeatherHistory> GetWeatherHistoryForOneDay(string city, DateTime date, int timeout)
+        {
+            IWeatherApiAccess<WeatherApiHistory> weatherApi = new WeatherApiAccess<WeatherApiHistory>();
+            string dateStr = date.ToString("yyyy-MM-dd");
+
+            string weatherApiKey = "be3127bfc1334b30a1c72842222005";
+            string uri = @$"http://api.weatherapi.com/v1/history.json?key={weatherApiKey}&q={city}&dt={dateStr}";
+
+            Stopwatch sw = Stopwatch.StartNew();
+            var task = Task.Run(() => weatherApi.GetWeatherData(uri));
+            bool isTaskCompleted = task.Wait(TimeSpan.FromMilliseconds(timeout));
+            sw.Stop();
+
+            if (!isTaskCompleted) return new ServiceResponse<WeatherHistory>(null, false, $"History weather request for {city} was canceled due to a timeout.", sw.ElapsedMilliseconds, ResponseType.Canceled);
+            if (!task.Result.Success) return new ServiceResponse<WeatherHistory>(null, false, $"City: {city}. Error: City was not found.", sw.ElapsedMilliseconds, ResponseType.Failed);
+
+            WeatherHistory weatherHistory = GetWeatherHistoryObject(task.Result.Data);
+            return new ServiceResponse<WeatherHistory>(weatherHistory, true, ResponseType.Success);
         }
 
         private void SaveWeatherForecastToDb(WeatherForecast weather)
@@ -127,6 +150,20 @@ namespace BusinessLogic.services
 
             _context.WebWeathers.Add(webWeather);
             _context.SaveChanges();
+        }
+
+        private WeatherHistory GetWeatherHistoryObject(WeatherApiHistory weatherApiHistory)
+        {
+            return new WeatherHistory
+            {
+                Name = weatherApiHistory.Location.Name,
+                Country = weatherApiHistory.Location.Country,
+                Lat = weatherApiHistory.Location.Lat,
+                Lon = weatherApiHistory.Location.Lon,
+                Date = weatherApiHistory.Forecast.ForecastDay[0].Date,
+                Avgtemp_c = weatherApiHistory.Forecast.ForecastDay[0].Day.Avgtemp_c,
+                Hours = new List<Hour>(weatherApiHistory.Forecast.ForecastDay[0].Hour)
+            };
         }
 
         private WeatherForecast GetWeatherForecast(WebWeatherForecast webForecast)
