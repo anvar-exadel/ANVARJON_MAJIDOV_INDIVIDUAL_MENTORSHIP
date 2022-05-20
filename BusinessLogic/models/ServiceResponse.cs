@@ -9,6 +9,10 @@ namespace BusinessLogic.models
     {
         public ServiceResponse()
         {}
+        public ServiceResponse(T data)
+        {
+            Data = data;
+        }
         public ServiceResponse(T data, bool success, string message)
         {
             Data = data;
