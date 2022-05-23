@@ -1,10 +1,11 @@
 using BusinessLogic.helpers;
-using BusinessLogic.models;
 using BusinessLogic.services;
 using DatabaseAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Shared.apiResponse.serviceResponse;
+using Shared.apiResponse.weatherResponse;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using BusinessLogic.interfaces;
-using BusinessLogic.models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Shared.apiResponse.serviceResponse;
+using Shared.apiResponse.weatherResponse;
 using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,4 @@
-namespace BusinessLogic.models
+namespace Shared.apiResponse.weatherResponse
 {
     public class Weather
     {

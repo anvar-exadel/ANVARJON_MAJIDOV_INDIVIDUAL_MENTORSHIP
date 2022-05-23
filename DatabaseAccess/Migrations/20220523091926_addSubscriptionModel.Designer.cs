@@ -3,14 +3,16 @@ using System;
 using DatabaseAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DatabaseAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220523091926_addSubscriptionModel")]
+    partial class addSubscriptionModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,7 +70,7 @@ namespace DatabaseAccess.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SubscriptionId")
+                    b.Property<int?>("SubscriptionId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -180,13 +182,9 @@ namespace DatabaseAccess.Migrations
 
             modelBuilder.Entity("Shared.models.mail.City", b =>
                 {
-                    b.HasOne("Shared.models.mail.Subscription", "Subscription")
+                    b.HasOne("Shared.models.mail.Subscription", null)
                         .WithMany("Cities")
-                        .HasForeignKey("SubscriptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Subscription");
+                        .HasForeignKey("SubscriptionId");
                 });
 
             modelBuilder.Entity("Shared.models.mail.Subscription", b =>

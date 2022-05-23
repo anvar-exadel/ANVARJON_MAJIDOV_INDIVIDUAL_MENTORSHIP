@@ -1,6 +1,6 @@
 ﻿using BusinessLogic.interfaces;
-using BusinessLogic.models;
 using DatabaseAccess;
+using Shared.apiResponse.serviceResponse;
 using Shared.dtos.auth;
 using Shared.models;
 using System;

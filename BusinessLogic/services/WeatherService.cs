@@ -1,12 +1,13 @@
 using BusinessLogic.helpers;
 using BusinessLogic.interfaces;
-using BusinessLogic.models;
 using DatabaseAccess;
 using DatabaseAccess.interfaces;
-using DatabaseAccess.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using Shared.apiResponse;
+using Shared.apiResponse.serviceResponse;
+using Shared.apiResponse.weatherResponse;
 using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,8 @@ namespace BusinessLogic.services
                 var response = GetWeatherHistoryForOneDay(city, d, timeout).Data;
                 if(response != null) list.Add(response);
             }
+
+            if (list.Count == 0) return new ServiceResponse<List<WeatherHistory>>(null, false, "No data found", ResponseType.Failed);
 
             foreach (var item in list)
             {

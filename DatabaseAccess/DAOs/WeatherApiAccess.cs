@@ -1,6 +1,6 @@
 ﻿using DatabaseAccess.interfaces;
-using DatabaseAccess.models;
 using Newtonsoft.Json;
+using Shared.apiResponse.weatherResponse;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

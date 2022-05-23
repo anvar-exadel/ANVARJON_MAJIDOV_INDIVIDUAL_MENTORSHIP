@@ -1,8 +1,8 @@
 ﻿using BusinessLogic.interfaces;
-using BusinessLogic.models;
 using DatabaseAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.apiResponse.serviceResponse;
 using Shared.dtos.auth;
 using Shared.models;
 using System.Linq;
