@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shared.models.weatherHistoryModels.apiResponse
+namespace Shared.apiResponse.weatherResponse
 {
     public class WeatherApiLocation
     {

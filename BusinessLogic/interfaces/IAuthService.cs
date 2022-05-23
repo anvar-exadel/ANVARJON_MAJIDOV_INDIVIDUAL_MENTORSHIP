@@ -1,4 +1,4 @@
-﻿using BusinessLogic.models;
+﻿using Shared.apiResponse.serviceResponse;
 using Shared.dtos.auth;
 using System;
 using System.Collections.Generic;

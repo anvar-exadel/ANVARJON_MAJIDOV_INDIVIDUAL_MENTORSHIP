@@ -1,12 +1,13 @@
 using BusinessLogic.helpers;
 using BusinessLogic.interfaces;
-using BusinessLogic.models;
 using DatabaseAccess;
 using DatabaseAccess.interfaces;
-using DatabaseAccess.models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
+using Shared.apiResponse;
+using Shared.apiResponse.serviceResponse;
+using Shared.apiResponse.weatherResponse;
 using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;

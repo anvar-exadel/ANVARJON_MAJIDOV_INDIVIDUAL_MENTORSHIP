@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Shared.models;
+using Shared.models.mail;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,8 @@ namespace DatabaseAccess
         public virtual DbSet<WebWeather> WebWeathers { get; set; }
         public virtual DbSet<WebDailyTemp> WebDailyTemps { get; set; }
         public virtual DbSet<WebWeatherForecast> WeatherForecasts { get; set; }
+        public virtual DbSet<City> Cities { get; set; }
+        public virtual DbSet<Subscription> Subscriptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

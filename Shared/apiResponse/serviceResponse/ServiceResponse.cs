@@ -1,9 +1,8 @@
-﻿using DatabaseAccess.models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BusinessLogic.models
+namespace Shared.apiResponse.serviceResponse
 {
     public class ServiceResponse<T>
     {

@@ -1,4 +1,5 @@
-using BusinessLogic.models;
+using Shared.apiResponse.serviceResponse;
+using Shared.apiResponse.weatherResponse;
 using Shared.models.weatherHistoryModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;

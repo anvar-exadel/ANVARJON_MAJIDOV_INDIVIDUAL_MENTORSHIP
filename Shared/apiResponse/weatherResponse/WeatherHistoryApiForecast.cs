@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shared.models.weatherHistoryModels
+namespace Shared.apiResponse.weatherResponse
 {
     public class WeatherHistoryApiForecast
     {

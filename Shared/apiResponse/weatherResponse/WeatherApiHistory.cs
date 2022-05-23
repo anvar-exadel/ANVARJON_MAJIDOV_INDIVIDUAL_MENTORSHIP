@@ -1,9 +1,9 @@
-﻿using Shared.models.weatherHistoryModels.apiResponse;
+﻿using Shared.models.weatherHistoryModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shared.models.weatherHistoryModels
+namespace Shared.apiResponse.weatherResponse
 {
     public class WeatherApiHistory
     {
