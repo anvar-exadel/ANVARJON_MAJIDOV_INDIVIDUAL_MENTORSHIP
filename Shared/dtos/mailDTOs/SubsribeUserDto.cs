@@ -7,7 +7,7 @@ namespace Shared.dtos.mailDTOs
     public class SubsribeUserDto
     {
         public int UserId { get; set; }
-        public int IntervalInSeconds { get; set; }
+        public int IntervalInHours { get; set; }
         public List<string> Cities { get; set; }
     }
 }

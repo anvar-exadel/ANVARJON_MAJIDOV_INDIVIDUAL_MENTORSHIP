@@ -105,6 +105,8 @@ namespace BusinessLogic.services
                 if(response != null) list.Add(response);
             }
 
+            if (list.Count == 0) return new ServiceResponse<List<WeatherHistory>>(null, false, "No data found", ResponseType.Failed);
+
             foreach (var item in list)
             {
                 List<Hour> filtered = item.Hours.Where(h => h.Time >= dateLimit && h.Time <= DateTime.Now).ToList();

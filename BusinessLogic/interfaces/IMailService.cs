@@ -10,5 +10,6 @@ namespace BusinessLogic.interfaces
     {
         ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe);
         ServiceResponse<GetSubscriptionDto> Unsubscribe(int userId);
+        ServiceResponse<string> GetReport(int userId, int requestTimeout);
     }
 }
