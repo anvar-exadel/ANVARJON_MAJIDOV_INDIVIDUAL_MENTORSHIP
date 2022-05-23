@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shared.models.mail
+namespace Shared.dtos.mailDTOs
 {
-    public class Subscription
+    public class GetSubscriptionDto
     {
         public int Id { get; set; }
         public int Interval { get; set; }
-        public List<City> Cities { get; set; }
-
+        public List<string> Cities { get; set; }
         public int AppUserId { get; set; }
-        public AppUser AppUser { get; set; }
     }
 }

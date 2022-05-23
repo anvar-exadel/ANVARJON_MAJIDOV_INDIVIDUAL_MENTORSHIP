@@ -1,4 +1,4 @@
-﻿using DatabaseAccess.models;
+﻿using Shared.apiResponse.weatherResponse;
 using System;
 using System.Collections.Generic;
 using System.Text;
