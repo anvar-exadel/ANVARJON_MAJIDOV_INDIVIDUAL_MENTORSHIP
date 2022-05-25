@@ -1,9 +1,13 @@
 ﻿using BusinessLogic.interfaces;
 using DatabaseAccess;
+using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using Shared.apiResponse.mailResponse;
 using Shared.apiResponse.serviceResponse;
 using Shared.apiResponse.weatherResponse;
+using Shared.configFiles;
 using Shared.dtos.mailDTOs;
 using Shared.models;
 using Shared.models.mail;
@@ -20,10 +24,37 @@ namespace BusinessLogic.services
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
 
-        public MailService(AppDbContext context, IWeatherService weatherService)
+        private readonly MailSettings _mailSettings;
+        public MailService(AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings)
         {
+            _mailSettings = mailSettings.Value;
             _context = context;
             _weatherService = weatherService;
+        }
+
+        public void SendEmail(MailRequest mailer)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+            message.To.Add(new MailboxAddress(mailer.ToEmail, mailer.ToEmail));
+            message.Subject = mailer.Subject;
+
+            message.Body = new TextPart("plain"){ Text = mailer.Body };
+            try
+            {
+                using SmtpClient client = new SmtpClient();
+                client.Connect(_mailSettings.Host, _mailSettings.Port, true);
+
+                // Note: only needed if the SMTP server requires authentication
+                client.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe)
@@ -40,6 +71,14 @@ namespace BusinessLogic.services
                 AppUserId = user.Id,
                 Cities = GetCities(subscribe.Cities)
             };
+
+            SendEmail(new MailRequest
+            {
+                ToEmail = "xhb41476@jiooq.com",
+                Subject = "Testing app",
+                Body = "This is body of email."
+            });
+
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
 
