@@ -1,6 +1,8 @@
 using BusinessLogic.interfaces;
 using BusinessLogic.services;
 using DatabaseAccess;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,10 +33,15 @@ namespace WeatherAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            GlobalConfiguration.Configuration.UseSQLiteStorage();
+
             string conStr = _configuration.GetConnectionString("DefaultConnection");
 
             services.Configure<MailSettings>(_configuration.GetSection("MailSettings"));
             services.AddDbContext<AppDbContext>(o => o.UseSqlite(conStr));
+            services.AddHangfire(x => x.UseSQLiteStorage(conStr));
+            services.AddHangfireServer();
+
             services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
@@ -67,6 +74,8 @@ namespace WeatherAPI
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WeatherAPI v1"));
+
+                app.UseHangfireDashboard("/dashboard");
             }
 
             app.UseHttpsRedirection();
