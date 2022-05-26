@@ -1,8 +1,10 @@
 ﻿using BusinessLogic.interfaces;
 using DatabaseAccess;
+using Hangfire;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using Shared.apiResponse.mailResponse;
@@ -24,10 +26,12 @@ namespace BusinessLogic.services
     {
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
-        
+        private readonly ILogger<MailService> _logger;
+
         private readonly MailSettings _mailSettings;
-        public MailService(AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
+        public MailService(ILogger<MailService> logger, AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
         {
+            _logger = logger;
             _mailSettings = mailSettings.Value;
             _context = context;
             _weatherService = weatherService;
@@ -58,6 +62,11 @@ namespace BusinessLogic.services
             }
         }
 
+        public void SendEmail(string report)
+        {
+            _logger.LogInformation("Email send with report\n" + report);
+        }
+
         public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout)
         {
             AppUser user = _context.AppUsers.Include(u => u.Subscription).ThenInclude(s => s.Cities).FirstOrDefault(u => u.Id == subscribe.UserId);
@@ -76,12 +85,14 @@ namespace BusinessLogic.services
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
 
-            SendEmail(new MailRequest
-            {
-                ToEmail = user.Email,
-                Subject = "Weather Report",
-                Body = GetReport(user.Id, requestTimeout).Data
-            });
+            RecurringJob.AddOrUpdate(subscription.Id.ToString(), () => SendEmail(GetReport(user.Id, requestTimeout).Data), Cron.Minutely);
+
+            //SendEmail(new MailRequest
+            //{
+            //    ToEmail = user.Email,
+            //    Subject = "Weather Report",
+            //    Body = GetReport(user.Id, requestTimeout).Data
+            //});
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto
             {
@@ -99,6 +110,9 @@ namespace BusinessLogic.services
             if (user.Subscription == null) return new ServiceResponse<GetSubscriptionDto>(null, false, "User is not subscribed", ResponseType.Failed);
 
             Subscription s = user.Subscription;
+
+            RecurringJob.RemoveIfExists(s.Id.ToString());
+
             _context.Subscriptions.Remove(s);
             _context.SaveChanges();
 
