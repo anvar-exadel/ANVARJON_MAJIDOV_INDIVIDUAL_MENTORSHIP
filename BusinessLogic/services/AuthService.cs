@@ -24,9 +24,11 @@ namespace BusinessLogic.services
         public ServiceResponse<UserDto> Register(RegisterDto registerDto)
         {
             if (UserExists(registerDto.UserName)) return new ServiceResponse<UserDto>(null, false, "Username is already taken", ResponseType.Failed);
+            if(_context.AppUsers.Any(u => u.Email == registerDto.Email)) return new ServiceResponse<UserDto>(null, false, "Email is already in use", ResponseType.Failed);
 
             AppUser newUser = new AppUser 
-            { 
+            {
+                Email = registerDto.Email,
                 UserName = registerDto.UserName,
                 UserRole = UserRole.User
             };
@@ -58,6 +60,7 @@ namespace BusinessLogic.services
             return new UserDto
             {
                 Id = appUser.Id,
+                Email = appUser.Email,
                 UserName = appUser.UserName,
                 Token = _tokenService.GetToken(appUser)
             };

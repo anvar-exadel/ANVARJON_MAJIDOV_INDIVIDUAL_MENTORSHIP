@@ -2,6 +2,7 @@
 using DatabaseAccess;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using Shared.apiResponse.mailResponse;
@@ -23,9 +24,9 @@ namespace BusinessLogic.services
     {
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
-
+        
         private readonly MailSettings _mailSettings;
-        public MailService(AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings)
+        public MailService(AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
         {
             _mailSettings = mailSettings.Value;
             _context = context;
@@ -57,7 +58,7 @@ namespace BusinessLogic.services
             }
         }
 
-        public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe)
+        public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout)
         {
             AppUser user = _context.AppUsers.Include(u => u.Subscription).ThenInclude(s => s.Cities).FirstOrDefault(u => u.Id == subscribe.UserId);
             if (user == null) return new ServiceResponse<GetSubscriptionDto>(null, false, "User does not exist", ResponseType.Failed);
@@ -72,15 +73,15 @@ namespace BusinessLogic.services
                 Cities = GetCities(subscribe.Cities)
             };
 
-            SendEmail(new MailRequest
-            {
-                ToEmail = "xhb41476@jiooq.com",
-                Subject = "Testing app",
-                Body = "This is body of email."
-            });
-
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
+
+            SendEmail(new MailRequest
+            {
+                ToEmail = user.Email,
+                Subject = "Weather Report",
+                Body = GetReport(user.Id, requestTimeout).Data
+            });
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto
             {

@@ -11,7 +11,7 @@ namespace BusinessLogic.interfaces
     {
         void SendEmail(MailRequest mail);
 
-        ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe);
+        ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout);
         ServiceResponse<GetSubscriptionDto> Unsubscribe(int userId);
         ServiceResponse<string> GetReport(int userId, int requestTimeout);
     }

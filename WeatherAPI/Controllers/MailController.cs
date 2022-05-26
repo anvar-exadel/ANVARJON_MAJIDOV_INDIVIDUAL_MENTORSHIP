@@ -25,7 +25,7 @@ namespace WeatherAPI.Controllers
         [HttpPost]
         public IActionResult Subscribe(SubsribeUserDto subsribe)
         {
-            var response = _mailService.Subscribe(subsribe);
+            var response = _mailService.Subscribe(subsribe, requestTimeout);
             if(!response.Success) return BadRequest(response);
 
             return Ok(response);
