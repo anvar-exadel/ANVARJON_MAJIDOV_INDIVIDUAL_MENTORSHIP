@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Shared.configFiles;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,7 @@ namespace WeatherAPI
 
             string conStr = _configuration.GetConnectionString("DefaultConnection");
 
+            services.Configure<MailSettings>(_configuration.GetSection("MailSettings"));
             services.AddDbContext<AppDbContext>(o => o.UseSqlite(conStr));
             services.AddHangfire(x => x.UseSQLiteStorage(conStr));
             services.AddHangfireServer();

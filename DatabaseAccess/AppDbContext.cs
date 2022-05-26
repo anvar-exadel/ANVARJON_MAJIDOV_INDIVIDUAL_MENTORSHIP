@@ -26,24 +26,28 @@ namespace DatabaseAccess
                 new AppUser
                 {
                     Id = 1,
+                    Email = "",
                     UserName = "Vladimir",
                     UserRole = UserRole.Admin
                 },
                 new AppUser
                 {
                     Id = 2,
+                    Email = "qqhdsnxaxqygwijfhl@kvhrw.com",
                     UserName = "Anvar",
                     UserRole = UserRole.Admin
                 },
                 new AppUser
                 {
                     Id = 3,
+                    Email = "",
                     UserName = "Jim",
                     UserRole = UserRole.User
                 },
                 new AppUser
                 {
                     Id = 4,
+                    Email = "",
                     UserName = "John",
                     UserRole = UserRole.User
                 }

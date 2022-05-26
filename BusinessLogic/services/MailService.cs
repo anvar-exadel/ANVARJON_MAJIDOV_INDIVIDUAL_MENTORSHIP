@@ -1,9 +1,16 @@
 ﻿using BusinessLogic.interfaces;
 using DatabaseAccess;
+using Hangfire;
+using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using Shared.apiResponse.mailResponse;
 using Shared.apiResponse.serviceResponse;
 using Shared.apiResponse.weatherResponse;
+using Shared.configFiles;
 using Shared.dtos.mailDTOs;
 using Shared.models;
 using Shared.models.mail;
@@ -19,14 +26,48 @@ namespace BusinessLogic.services
     {
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
+        private readonly ILogger<MailService> _logger;
 
-        public MailService(AppDbContext context, IWeatherService weatherService)
+        private readonly MailSettings _mailSettings;
+        public MailService(ILogger<MailService> logger, AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
         {
+            _logger = logger;
+            _mailSettings = mailSettings.Value;
             _context = context;
             _weatherService = weatherService;
         }
 
-        public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe)
+        public void SendEmail(MailRequest mailer)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
+            message.To.Add(new MailboxAddress(mailer.ToEmail, mailer.ToEmail));
+            message.Subject = mailer.Subject;
+
+            message.Body = new TextPart("plain"){ Text = mailer.Body };
+            try
+            {
+                using SmtpClient client = new SmtpClient();
+                client.Connect(_mailSettings.Host, _mailSettings.Port, true);
+
+                // Note: only needed if the SMTP server requires authentication
+                client.Authenticate(_mailSettings.Mail, _mailSettings.Password);
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public void SendEmail(string report)
+        {
+            _logger.LogInformation("Email send with report\n" + report);
+        }
+
+        public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout)
         {
             AppUser user = _context.AppUsers.Include(u => u.Subscription).ThenInclude(s => s.Cities).FirstOrDefault(u => u.Id == subscribe.UserId);
             if (user == null) return new ServiceResponse<GetSubscriptionDto>(null, false, "User does not exist", ResponseType.Failed);
@@ -40,8 +81,18 @@ namespace BusinessLogic.services
                 AppUserId = user.Id,
                 Cities = GetCities(subscribe.Cities)
             };
+
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
+
+            RecurringJob.AddOrUpdate(subscription.Id.ToString(), () => SendEmail(GetReport(user.Id, requestTimeout).Data), Cron.Minutely);
+
+            //SendEmail(new MailRequest
+            //{
+            //    ToEmail = user.Email,
+            //    Subject = "Weather Report",
+            //    Body = GetReport(user.Id, requestTimeout).Data
+            //});
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto
             {
@@ -59,6 +110,9 @@ namespace BusinessLogic.services
             if (user.Subscription == null) return new ServiceResponse<GetSubscriptionDto>(null, false, "User is not subscribed", ResponseType.Failed);
 
             Subscription s = user.Subscription;
+
+            RecurringJob.RemoveIfExists(s.Id.ToString());
+
             _context.Subscriptions.Remove(s);
             _context.SaveChanges();
 
