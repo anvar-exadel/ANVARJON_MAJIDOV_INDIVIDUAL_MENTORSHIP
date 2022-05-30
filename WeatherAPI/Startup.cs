@@ -42,6 +42,7 @@ namespace WeatherAPI
             services.AddHangfire(x => x.UseSQLiteStorage(conStr));
             services.AddHangfireServer();
 
+            services.AddSingleton<ISendRabbit, SendRabbit>();
             services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
