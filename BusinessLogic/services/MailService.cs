@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace BusinessLogic.services
 {
@@ -27,14 +28,16 @@ namespace BusinessLogic.services
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
         private readonly ILogger<MailService> _logger;
+        private readonly ISendRabbit _emailRabbit;
 
         private readonly MailSettings _mailSettings;
-        public MailService(ILogger<MailService> logger, AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
+        public MailService(ISendRabbit emailRabbit, ILogger<MailService> logger, AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
         {
             _logger = logger;
             _mailSettings = mailSettings.Value;
             _context = context;
             _weatherService = weatherService;
+            _emailRabbit = emailRabbit;
         }
 
         public void SendEmail(MailRequest mailer)
@@ -62,7 +65,13 @@ namespace BusinessLogic.services
             }
         }
 
-        public void SendEmail(string report)
+        public void SendEmailWithRabbit(MailRequest mail)
+        {
+            string message = JsonSerializer.Serialize<MailRequest>(mail);
+            _emailRabbit.SendMessage(message, "emailQueue");
+        }
+
+        private void SendEmail(string report)
         {
             _logger.LogInformation("Email send with report\n" + report);
         }
@@ -85,7 +94,15 @@ namespace BusinessLogic.services
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
 
-            RecurringJob.AddOrUpdate(subscription.Id.ToString(), () => SendEmail(GetReport(user.Id, requestTimeout).Data), Cron.Minutely);
+            RecurringJob.AddOrUpdate(subscription.Id.ToString(), 
+                () => SendEmailWithRabbit(new MailRequest
+                {
+                    ToEmail = user.Email,
+                    Subject = "Weather Report",
+                    Body = GetReport(user.Id, requestTimeout).Data
+                }), Cron.Minutely);
+
+            //SendEmail(GetReport(user.Id, requestTimeout).Data)
 
             //SendEmail(new MailRequest
             //{

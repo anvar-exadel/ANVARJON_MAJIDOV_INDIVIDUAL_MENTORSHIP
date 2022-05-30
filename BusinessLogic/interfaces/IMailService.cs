@@ -10,6 +10,7 @@ namespace BusinessLogic.interfaces
     public interface IMailService
     {
         void SendEmail(MailRequest mail);
+        void SendEmailWithRabbit(MailRequest mail);
 
         ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout);
         ServiceResponse<GetSubscriptionDto> Unsubscribe(int userId);

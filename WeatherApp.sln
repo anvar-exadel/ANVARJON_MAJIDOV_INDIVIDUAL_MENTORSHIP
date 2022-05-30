@@ -27,7 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherAPI", "WeatherAPI\We
 		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E} = {EFCF2736-0710-4AA0-8B63-1CBA1013F92E}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailService", "EmailService\EmailService.csproj", "{3556CC0D-23A1-4081-964E-21207B979F1B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFCF2736-0710-4AA0-8B63-1CBA1013F92E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3556CC0D-23A1-4081-964E-21207B979F1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3556CC0D-23A1-4081-964E-21207B979F1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3556CC0D-23A1-4081-964E-21207B979F1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3556CC0D-23A1-4081-964E-21207B979F1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
