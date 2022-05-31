@@ -23,57 +23,17 @@ using System.Text.Json;
 
 namespace BusinessLogic.services
 {
-    public class MailService : IMailService
+    public class MailSubService : IMailSubService
     {
         private readonly AppDbContext _context;
         private readonly IWeatherService _weatherService;
-        private readonly ILogger<MailService> _logger;
-        private readonly ISendRabbit _emailRabbit;
+        private readonly IMailService _mailService;
 
-        private readonly MailSettings _mailSettings;
-        public MailService(ISendRabbit emailRabbit, ILogger<MailService> logger, AppDbContext context, IWeatherService weatherService, IOptions<MailSettings> mailSettings, IConfiguration configuration)
+        public MailSubService(IMailService mailService, AppDbContext context, IWeatherService weatherService)
         {
-            _logger = logger;
-            _mailSettings = mailSettings.Value;
             _context = context;
+            _mailService = mailService;
             _weatherService = weatherService;
-            _emailRabbit = emailRabbit;
-        }
-
-        public void SendEmail(MailRequest mailer)
-        {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_mailSettings.DisplayName, _mailSettings.Mail));
-            message.To.Add(new MailboxAddress(mailer.ToEmail, mailer.ToEmail));
-            message.Subject = mailer.Subject;
-
-            message.Body = new TextPart("plain"){ Text = mailer.Body };
-            try
-            {
-                using SmtpClient client = new SmtpClient();
-                client.Connect(_mailSettings.Host, _mailSettings.Port, true);
-
-                // Note: only needed if the SMTP server requires authentication
-                client.Authenticate(_mailSettings.Mail, _mailSettings.Password);
-
-                client.Send(message);
-                client.Disconnect(true);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public void SendEmailWithRabbit(MailRequest mail)
-        {
-            string message = JsonSerializer.Serialize<MailRequest>(mail);
-            _emailRabbit.SendMessage(message, "emailQueue");
-        }
-
-        private void SendEmail(string report)
-        {
-            _logger.LogInformation("Email send with report\n" + report);
         }
 
         public ServiceResponse<GetSubscriptionDto> Subscribe(SubsribeUserDto subscribe, int requestTimeout)
@@ -94,22 +54,15 @@ namespace BusinessLogic.services
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
 
-            RecurringJob.AddOrUpdate(subscription.Id.ToString(), 
-                () => SendEmailWithRabbit(new MailRequest
+
+            RecurringJob.AddOrUpdate(subscription.Id.ToString(),
+                () => _mailService.SendEmail(new MailRequest
                 {
                     ToEmail = user.Email,
                     Subject = "Weather Report",
                     Body = GetReport(user.Id, requestTimeout).Data
                 }), Cron.Minutely);
-
-            //SendEmail(GetReport(user.Id, requestTimeout).Data)
-
-            //SendEmail(new MailRequest
-            //{
-            //    ToEmail = user.Email,
-            //    Subject = "Weather Report",
-            //    Body = GetReport(user.Id, requestTimeout).Data
-            //});
+            
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto
             {

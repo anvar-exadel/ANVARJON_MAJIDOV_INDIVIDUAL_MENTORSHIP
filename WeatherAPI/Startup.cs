@@ -42,11 +42,20 @@ namespace WeatherAPI
             services.AddHangfire(x => x.UseSQLiteStorage(conStr));
             services.AddHangfireServer();
 
-            services.AddSingleton<ISendRabbit, SendRabbit>();
+            if (_configuration.GetValue<bool>("EmailSettingFlag:LocalSender"))
+            {
+                services.AddSingleton<IMailService, MailLocalService>();
+            }
+            else
+            {
+                services.AddSingleton<ISendRabbit, SendRabbit>();
+                services.AddSingleton<IMailService, MailRabbitService>();
+            }
+
             services.AddScoped<IWeatherService, WeatherService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IMailService, MailService>();
+            services.AddScoped<IMailSubService, MailSubService>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

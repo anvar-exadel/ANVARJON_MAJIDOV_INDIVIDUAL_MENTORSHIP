@@ -10,11 +10,11 @@ namespace WeatherAPI.Controllers
     [Route("api/[controller]")]
     public class MailController : ControllerBase
     {
-        private readonly IMailService _mailService;
+        private readonly IMailSubService _mailService;
         private readonly IConfiguration _configuration;
 
         private readonly int requestTimeout;
-        public MailController(IMailService mailService, IConfiguration configuration)
+        public MailController(IMailSubService mailService, IConfiguration configuration)
         {
             _mailService = mailService;
             _configuration = configuration;
