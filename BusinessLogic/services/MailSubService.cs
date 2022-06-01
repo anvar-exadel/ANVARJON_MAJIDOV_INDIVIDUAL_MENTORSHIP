@@ -54,15 +54,9 @@ namespace BusinessLogic.services
             _context.Subscriptions.Add(subscription);
             _context.SaveChanges();
 
-
-            RecurringJob.AddOrUpdate(subscription.Id.ToString(),
-                () => _mailService.SendEmail(new MailRequest
-                {
-                    ToEmail = user.Email,
-                    Subject = "Weather Report",
-                    Body = GetReport(user.Id, requestTimeout).Data
-                }), Cron.Minutely);
-            
+            string subId = subscription.Id.ToString();
+            string cronExpr = $@"0 0 */{subscribe.IntervalInHours} ? * *";
+            RecurringJob.AddOrUpdate(subId, () => SendEmail(user.Id, user.Email, requestTimeout), cronExpr);
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto
             {
@@ -95,6 +89,18 @@ namespace BusinessLogic.services
             });
         }
 
+        public void SendEmail(int userId, string email, int requestTimeout)
+        {
+            string body = GetReport(userId, requestTimeout).Data;
+            MailRequest mail = new MailRequest
+            {
+                ToEmail = email,
+                Subject = "Weather Report",
+                Body = body
+            };
+            _mailService.SendEmail(mail);
+        }
+
         public ServiceResponse<string> GetReport(int userId, int requestTimeout)
         {
             AppUser user = _context.AppUsers.Include(u => u.Subscription).ThenInclude(s => s.Cities).FirstOrDefault(u => u.Id == userId);
@@ -103,7 +109,7 @@ namespace BusinessLogic.services
 
             StringBuilder ans = new StringBuilder(); 
             Subscription s = user.Subscription;
-
+            
             ans.AppendLine($@"The report was generated: {DateTime.Now}. Period: {s.Interval/3600}");
             foreach (City city in s.Cities)
             {
