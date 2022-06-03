@@ -44,7 +44,7 @@ namespace BusinessLogic.services
 
         public ServiceResponse<UserDto> Login(LoginDto loginDto)
         {
-            AppUser user = _context.AppUsers.FirstOrDefault(u => u.UserName.Equals(loginDto.UserName, StringComparison.OrdinalIgnoreCase));
+            AppUser user = _context.AppUsers.FirstOrDefault(u => u.UserName.ToLower() == loginDto.UserName.ToLower());
             if (user == null) return new ServiceResponse<UserDto>(null, false, "Username is not found", ResponseType.Failed);
 
             return new ServiceResponse<UserDto>(GetUserDtoFromAppUser(user));
@@ -52,7 +52,7 @@ namespace BusinessLogic.services
 
         private bool UserExists(string username)
         {
-            return _context.AppUsers.Any(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
+            return _context.AppUsers.Any(u => u.UserName.ToLower() == username.ToLower());
         }
 
         private UserDto GetUserDtoFromAppUser(AppUser appUser)

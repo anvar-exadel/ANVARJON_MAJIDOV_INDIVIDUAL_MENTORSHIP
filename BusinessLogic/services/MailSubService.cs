@@ -55,7 +55,8 @@ namespace BusinessLogic.services
             _context.SaveChanges();
 
             string subId = subscription.Id.ToString();
-            string cronExpr = $@"0 0 */{subscribe.IntervalInHours} ? * *";
+            string cronExpr = $@"0 */{subscribe.IntervalInHours} * * *";
+            SendEmail(user.Id, user.Email, requestTimeout);//send first email
             RecurringJob.AddOrUpdate(subId, () => SendEmail(user.Id, user.Email, requestTimeout), cronExpr);
 
             return new ServiceResponse<GetSubscriptionDto>(new GetSubscriptionDto

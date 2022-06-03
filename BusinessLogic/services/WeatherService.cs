@@ -40,7 +40,7 @@ namespace BusinessLogic.services
             if (WeatherHelper.isCityEmpty(city)) return new ServiceResponse<Weather>(null, false, "City name is empty");
 
             RemoveInvalidWeathers();
-            WebWeather webWeather = _context.WebWeathers.FirstOrDefault(w => w.Name.Equals(lcity, StringComparison.OrdinalIgnoreCase) && w.WeatherDay == DateTime.Today);
+            WebWeather webWeather = _context.WebWeathers.FirstOrDefault(w => w.Name.ToLower() == lcity && w.WeatherDay == DateTime.Today);
             if (webWeather != null) return new ServiceResponse<Weather>(GetWeatherFromWebWeather(webWeather), true, ResponseType.Success);
 
             Stopwatch sw = Stopwatch.StartNew();
@@ -70,7 +70,7 @@ namespace BusinessLogic.services
             if (days < 0 || days > maxDays) return new ServiceResponse<WeatherForecast>(null, false, "Number of days is out of range");
 
             RemoveInvalidWeathers();
-            WebWeatherForecast weatherForecastDb = _context.WeatherForecasts.Include(w => w.Daily).FirstOrDefault(w => w.Name.Equals(lcity, StringComparison.OrdinalIgnoreCase) && w.Cnt == days);
+            WebWeatherForecast weatherForecastDb = _context.WeatherForecasts.Include(w => w.Daily).FirstOrDefault(w => w.Name.ToLower() == lcity && w.Cnt == days);
             if (weatherForecastDb != null) return new ServiceResponse<WeatherForecast>(GetWeatherForecast(weatherForecastDb), true, ResponseType.Success);
 
             ServiceResponse<Weather> response = GetWeatherInfo(city, timeout);
