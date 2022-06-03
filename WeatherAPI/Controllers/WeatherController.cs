@@ -63,11 +63,11 @@ namespace WeatherAPI.Controllers
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("history/{city}/{interval}")]
-        public ActionResult<ServiceResponse<List<WeatherHistory>>> GetHistory(string city, int interval)
+        public ActionResult<ServiceResponse<List<WeatherHistory>>> GetHistory(string city, int intervalInSeconds)
         {
-            ServiceResponse<List<WeatherHistory>> response = _weatherService.GetWeatherHistory(city, interval, requestTimeout);
+            ServiceResponse<List<WeatherHistory>> response = _weatherService.GetWeatherHistory(city, intervalInSeconds, requestTimeout);
             if (!response.Success)
             {
                 _logger.LogInformation($"Weather history returned errors: {response.Message}");
