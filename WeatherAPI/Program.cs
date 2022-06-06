@@ -1,5 +1,8 @@
+using DatabaseAccess;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -20,7 +23,17 @@ namespace WeatherAPI
             try
             {
                 logger.Debug("init main");
-                CreateHostBuilder(args).Build().Run();
+                var host = CreateHostBuilder(args).Build();
+
+                using var scope = host.Services.CreateScope();
+                var services = scope.ServiceProvider;
+
+                var dbContext = services.GetRequiredService<AppDbContext>();
+                if (dbContext.Database.IsSqlServer())
+                {
+                    dbContext.Database.Migrate();
+                }
+                host.Run();
             }
             catch (Exception exception)
             {

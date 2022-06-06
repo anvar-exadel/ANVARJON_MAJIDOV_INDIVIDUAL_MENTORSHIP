@@ -23,6 +23,7 @@ namespace WeatherAPI.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public IActionResult Subscribe(SubsribeUserDto subsribe)
         {
             var response = _mailService.Subscribe(subsribe, requestTimeout);
@@ -32,6 +33,7 @@ namespace WeatherAPI.Controllers
         }
         
         [HttpDelete("{userId}")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Unsubscribe(int userId)
         {
             var response = _mailService.Unsubscribe(userId);

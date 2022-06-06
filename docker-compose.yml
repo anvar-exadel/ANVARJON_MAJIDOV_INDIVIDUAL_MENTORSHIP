@@ -1,0 +1,44 @@
+version: "3.4"
+
+networks:
+  app-tier:
+    driver: bridge
+
+
+services:
+  web:
+    build:
+      context: ./
+      dockerfile: ./WeatherAPI/Dockerfile
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "ABcd1234#Password"
+      ACCEPT_EULA: "Y"
+
+  email:
+    build:
+      context: ./
+      dockerfile: ./EmailService/Dockerfile
+    ports:
+      - "8001:80"
+    depends_on:
+      - rabbitmq
+    
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - app-tier
