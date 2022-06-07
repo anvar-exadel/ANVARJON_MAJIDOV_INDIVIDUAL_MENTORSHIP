@@ -15,7 +15,7 @@ namespace BusinessLogic.services
 
         public SendRabbit()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory() { HostName = "host.docker.internal" };
             _connection = factory.CreateConnection();
             _channel = _connection.CreateModel();
         }

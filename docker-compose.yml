@@ -29,7 +29,8 @@ services:
     ports:
       - "8001:80"
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -37,6 +38,9 @@ services:
     ports:
         - 5672:5672
         - 15672:15672
+    healthcheck:
+      test: "exit 0"
+
     volumes:
         - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
